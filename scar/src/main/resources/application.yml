@@ -1,0 +1,33 @@
+spring:
+  application:
+    name: SCar
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/scar?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul
+    username: root
+    password: 1234
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  sql:
+    init:
+      mode: never
+
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+server:
+  port: 8080
+  servlet:
+    session:
+      timeout: 30m              # 세션 타임아웃 (30분)
+      cookie:
+        http-only: true         # XSS 공격 방지 (JavaScript로 쿠키 접근 차단)
+        secure: false           # 개발 환경이므로 false, HTTPS 환경에서는 true로 변경
+        same-site: lax          # CSRF 공격 방지
+        name: JSESSIONID        # 세션 쿠키 이름 (기본값 명시)
