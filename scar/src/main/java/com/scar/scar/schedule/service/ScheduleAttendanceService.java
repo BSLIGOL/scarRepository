@@ -22,10 +22,10 @@ public class ScheduleAttendanceService {
         @Transactional
         public void attendSchedule(Long scheduleId, Long userId, AttendanceStatus status) {
                 Schedule schedule = scheduleRepository.findById(scheduleId)
-                                .orElseThrow(() -> new IllegalArgumentException("????????熬곣벀嫄?????瑗??????遺얘턁????????????????繹먮굞??????????怨몄）."));
+                                .orElseThrow(() -> new IllegalArgumentException("해당 일정을 찾을 수 없습니다."));
                 StudyMember studyMember = studyMemberRepository
                                 .findByStudyIdAndUserId(schedule.getStudy().getId(), userId)
-                                .orElseThrow(() -> new IllegalArgumentException("???????諛몃마?????遺얘턁????????⑤슢堉???? ??????꾩룆梨띰쭕??????????怨몄）."));
+                                .orElseThrow(() -> new IllegalArgumentException("해당 스터디에 가입된 회원이 아닙니다."));
 
                 ScheduleAttendance attendance = scheduleAttendanceRepository
                                 .findByScheduleAndStudyMember(schedule, studyMember)
@@ -41,4 +41,3 @@ public class ScheduleAttendanceService {
                 attendance.setStatus(status);
         }
 }
-

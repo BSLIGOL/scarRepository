@@ -40,13 +40,13 @@ public class StudyController {
             @RequestBody StudyRequestDto dto,
             @AuthenticationPrincipal CustomUserDetails currentUser) {
         if (currentUser == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("?汝??吏??癲ル슢???뼘?????썹땟???嶺뚮ㅎ????");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인된 사용자가 없습니다.");
         }
         studyService.createStudy(dto, currentUser.getUser());
         return ResponseEntity.ok("Success");
     }
 
-    /** ???熬곣뫖???????노듋????됰슦????*/
+    /** 스터디 상세 정보를 조회합니다. */
     @GetMapping("/{id}")
     public ResponseEntity<StudyDetailDto> viewStudy(
             @PathVariable Long id,
@@ -56,7 +56,7 @@ public class StudyController {
         return ResponseEntity.ok(study);
     }
 
-    /** ?????熬곣뫖????꿔꺂??袁ㅻ븶筌믠뫀萸???됰슦????*/
+    /** 내가 가입한 스터디 목록을 조회합니다. */
     @GetMapping("/my")
     public ResponseEntity<List<DashboardStudyDto>> getMyStudies(
             @AuthenticationPrincipal CustomUserDetails currentUser) {
@@ -68,7 +68,7 @@ public class StudyController {
     }
 
     /**
-     * ???熬곣뫖???????볥궚??(??잙갭큔筌??????醫딆쓧???
+     * 스터디 정보를 수정합니다. (스터디 리더만 가능)
      */
     @PutMapping("/{id}")
     public ResponseEntity<?> updateStudy(
@@ -76,31 +76,31 @@ public class StudyController {
             @RequestBody StudyRequestDto dto,
             @AuthenticationPrincipal CustomUserDetails currentUser) {
         if (currentUser == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("?汝??吏??癲ル슢???뼘?????썹땟???嶺뚮ㅎ????");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인된 사용자가 없습니다.");
         }
 
         try {
             studyService.updateStudy(id, dto, currentUser.getUser().getId());
-            return ResponseEntity.ok("???熬곣뫖???? ????볥궚???嶺???????");
+            return ResponseEntity.ok("스터디 정보가 수정되었습니다.");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
     /**
-     * ???熬곣뫖???????(??잙갭큔筌??????醫딆쓧???
+     * 스터디를 삭제합니다. (스터디 리더만 가능)
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteStudy(
             @PathVariable Long id,
             @AuthenticationPrincipal CustomUserDetails currentUser) {
         if (currentUser == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("?汝??吏??癲ル슢???뼘?????썹땟???嶺뚮ㅎ????");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인된 사용자가 없습니다.");
         }
 
         try {
             studyService.deleteStudy(id, currentUser.getUser().getId());
-            return ResponseEntity.ok("???熬곣뫖???? ?????嶺???????");
+            return ResponseEntity.ok("스터디가 삭제되었습니다.");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }

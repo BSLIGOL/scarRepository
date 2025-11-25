@@ -45,7 +45,7 @@ public class Study extends BaseEntity {
     private List<StudyMember> members = new ArrayList<>();
 
     /**
-     * ???????獄쏅챶留??????遺얘턁???????????????⑤슢堉??곕????
+     * 스터디 정보를 수정합니다.
      */
     public void updateInfo(String title, String content, int maxMember) {
         this.title = title;
@@ -53,4 +53,3 @@ public class Study extends BaseEntity {
         this.maxMember = maxMember;
     }
 }
-

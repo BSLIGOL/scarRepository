@@ -18,39 +18,38 @@ import java.util.List;
 @Transactional
 public class StudyMemberService {
 
-    private final StudyMemberRepository studyMemberRepository;
-    private final StudyRepository studyRepository;
-    private final UserRepository userRepository;
+        private final StudyMemberRepository studyMemberRepository;
+        private final StudyRepository studyRepository;
+        private final UserRepository userRepository;
 
-    public void leaveStudy(Long studyId, Long userId) {
-        Study study = studyRepository.findById(studyId)
-                .orElseThrow(() -> new IllegalArgumentException("???????諛몃마???? ?????Β???????? ?????????????怨몄）."));
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("?????????ル뭽?? ?????Β???????? ?????????????怨몄）."));
+        public void leaveStudy(Long studyId, Long userId) {
+                Study study = studyRepository.findById(studyId)
+                                .orElseThrow(() -> new IllegalArgumentException("해당 스터디를 찾을 수 없습니다."));
+                User user = userRepository.findById(userId)
+                                .orElseThrow(() -> new IllegalArgumentException("해당 유저를 찾을 수 없습니다."));
 
-        StudyMember member = studyMemberRepository.findByUserAndStudy(user, study)
-                .orElseThrow(() -> new IllegalStateException("???????諛몃마?????遺얘턁????????⑤슢堉???? ??????꾩룆梨띰쭕??????????怨몄）."));
+                StudyMember member = studyMemberRepository.findByUserAndStudy(user, study)
+                                .orElseThrow(() -> new IllegalStateException("해당 스터디에 가입된 회원이 아닙니다."));
 
-        member.setLeftAt(LocalDateTime.now());
-        studyMemberRepository.save(member);
-    }
+                member.setLeftAt(LocalDateTime.now());
+                studyMemberRepository.save(member);
+        }
 
-    public List<StudyMember> getMembers(Long studyId) {
+        public List<StudyMember> getMembers(Long studyId) {
 
-        Study study = studyRepository.findById(studyId)
-                .orElseThrow(() -> new IllegalArgumentException("???????諛몃마???? ?????Β???????? ?????????????怨몄）."));
+                Study study = studyRepository.findById(studyId)
+                                .orElseThrow(() -> new IllegalArgumentException("해당 스터디를 찾을 수 없습니다."));
 
-        return studyMemberRepository.findByStudy(study);
-    }
+                return studyMemberRepository.findByStudy(study);
+        }
 
-    /** ???????諛몃마?????遺얘턁????????⑤슢堉????耀붾굝?????????*/
-    public StudyMember getStudyMember(Long studyId, Long userId) {
-        Study study = studyRepository.findById(studyId)
-                .orElseThrow(() -> new IllegalArgumentException("???????諛몃마???? ?????Β???????? ?????????????怨몄）."));
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("?????????ル뭽?? ?????Β???????? ?????????????怨몄）."));
+        /** 스터디 회원 정보를 조회합니다. */
+        public StudyMember getStudyMember(Long studyId, Long userId) {
+                Study study = studyRepository.findById(studyId)
+                                .orElseThrow(() -> new IllegalArgumentException("해당 스터디를 찾을 수 없습니다."));
+                User user = userRepository.findById(userId)
+                                .orElseThrow(() -> new IllegalArgumentException("해당 유저를 찾을 수 없습니다."));
 
-        return studyMemberRepository.findByUserAndStudy(user, study).orElse(null);
-    }
+                return studyMemberRepository.findByUserAndStudy(user, study).orElse(null);
+        }
 }
-

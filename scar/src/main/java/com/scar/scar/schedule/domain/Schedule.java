@@ -52,7 +52,7 @@ public class Schedule extends BaseEntity {
     private User createdBy;
 
     /**
-     * ????????遺얘턁???????????????⑤슢堉??곕????
+     * 일정 정보를 수정합니다.
      */
     public void updateInfo(String title, String content, LocalDateTime startTime,
             LocalDateTime endTime, String location) {
@@ -63,4 +63,3 @@ public class Schedule extends BaseEntity {
         this.location = location;
     }
 }
-

@@ -1,4 +1,4 @@
-package com.scar.scar.user.controller;
+package com.scar.scar.schedule.controller;
 
 import com.scar.scar.schedule.domain.AttendanceStatus;
 import com.scar.scar.schedule.service.ScheduleAttendanceService;
@@ -17,7 +17,6 @@ public class ScheduleAttendanceController {
             @RequestParam Long userId,
             @RequestParam AttendanceStatus status) {
         scheduleAttendanceService.attendSchedule(scheduleId, userId, status);
-        return ResponseEntity.ok("Success"); // JSON ????????????諛몃마嶺뚮??????
+        return ResponseEntity.ok("Success"); // JSON 응답 반환
     }
 }
-

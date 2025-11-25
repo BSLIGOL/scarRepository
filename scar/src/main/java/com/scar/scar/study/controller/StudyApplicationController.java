@@ -1,4 +1,4 @@
-package com.scar.scar.user.controller;
+package com.scar.scar.study.controller;
 
 import com.scar.scar.study.domain.StudyApplication;
 import com.scar.scar.study.dto.StudyApplicationResponseDto;
@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 public class StudyApplicationController {
     private final StudyApplicationService studyApplicationService;
 
-    /** ???????諛몃마??????????癒꺜????遺얘턁?????????遺얜??熬곣뫖釉멧벧猿뗪섭鴉????????Β??????*/
+    /** 스터디 신청 목록을 조회합니다. (스터디 리더만 가능, only PENDING) */
     @GetMapping("/{id}")
     public ResponseEntity<List<StudyApplicationResponseDto>> getStudyApplications(
             @PathVariable Long id,
@@ -35,7 +35,7 @@ public class StudyApplicationController {
         return ResponseEntity.ok(dtos);
     }
 
-    /** ???????諛몃마??????????癒꺜??*/
+    /** 스터디 신청 */
     @PostMapping("/{id}/apply")
     public ResponseEntity<String> applyToStudy(
             @PathVariable Long id,
@@ -46,7 +46,7 @@ public class StudyApplicationController {
         return ResponseEntity.ok("Success");
     }
 
-    /** ???????諛몃마??????????癒꺜????????*/
+    /** 스터디 신청 승인 */
     @PostMapping("/approve/{applicationId}")
     public ResponseEntity<String> approve(
             @PathVariable long applicationId,
@@ -55,7 +55,7 @@ public class StudyApplicationController {
         return ResponseEntity.ok("Approved");
     }
 
-    /** ???????諛몃마??????????癒꺜????遺얘턁筌?（??????*/
+    /** 스터디 신청 거절 */
     @PostMapping("/reject/{applicationId}")
     public ResponseEntity<String> reject(
             @PathVariable long applicationId,
@@ -64,4 +64,3 @@ public class StudyApplicationController {
         return ResponseEntity.ok("Rejected");
     }
 }
-

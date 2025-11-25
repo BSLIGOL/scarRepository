@@ -37,17 +37,16 @@ public class User extends BaseEntity {
     private GlobalRole globalRole;
 
     /**
-     * ?????????????????⑤벡瑜????
+     * 닉네임을 변경합니다.
      */
     public void updateNickName(String newNickName) {
         this.nickName = newNickName;
     }
 
     /**
-     * ?????????????????⑤벡瑜????
+     * 비밀번호를 변경합니다.
      */
     public void updatePassword(String newPassword) {
         this.password = newPassword;
     }
 }
-

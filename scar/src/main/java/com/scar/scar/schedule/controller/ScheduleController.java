@@ -19,14 +19,14 @@ import java.util.List;
 public class ScheduleController {
     private final ScheduleService scheduleService;
 
-    /** ???嚥?????노듋????됰슦????*/
+    /** 일정 상세 정보를 조회합니다. */
     @GetMapping("/{scheduleId}")
     public ResponseEntity<ScheduleDetailDto> getScheduleDetail(@PathVariable Long scheduleId) {
         ScheduleDetailDto scheduleDetailDto = scheduleService.getScheduleDetail(scheduleId);
         return ResponseEntity.ok(scheduleDetailDto);
     }
 
-    /** ???嚥????꾩룆???*/
+    /** 일정을 생성합니다. */
     @PostMapping("/new")
     public ResponseEntity<String> newSchedule(
             @RequestBody ScheduleRequestDto schedule,
@@ -35,7 +35,7 @@ public class ScheduleController {
         return ResponseEntity.ok("Success");
     }
 
-    /** ???????紐꾪닓 ??濚밸Ŧ?????됰슦????(7??????? */
+    /** 다가오는 일정을 조회합니다. (7일 이내) */
     @GetMapping("/upcoming")
     public ResponseEntity<List<DashboardScheduleDto>> getUpcomingSchedules(
             @AuthenticationPrincipal CustomUserDetails currentUser) {
@@ -46,7 +46,7 @@ public class ScheduleController {
         return ResponseEntity.ok(schedules);
     }
 
-    /** ????紐꾪닚????濚밸Ŧ?????됰슦????*/
+    /** 오늘의 일정을 조회합니다. */
     @GetMapping("/today")
     public ResponseEntity<List<DashboardScheduleDto>> getTodaySchedules(
             @AuthenticationPrincipal CustomUserDetails currentUser) {
@@ -57,7 +57,7 @@ public class ScheduleController {
         return ResponseEntity.ok(schedules);
     }
 
-    /** ?????嚥???됰슦????(????????꾣뤃?饔낃퀣????醫딆쓧??? */
+    /** 월별 일정을 조회합니다. (year, month가 null이면 전체 일정 조회) */
     @GetMapping("/my")
     public ResponseEntity<List<DashboardScheduleDto>> getMySchedules(
             @AuthenticationPrincipal CustomUserDetails currentUser,
@@ -72,7 +72,7 @@ public class ScheduleController {
     }
 
     /**
-     * ???嚥?????볥궚??(???熬곣뫖?????잙갭큔筌??????醫딆쓧???
+     * 일정을 수정합니다. (스터디 리더만 가능)
      */
     @PutMapping("/{id}")
     public ResponseEntity<?> updateSchedule(
@@ -80,31 +80,31 @@ public class ScheduleController {
             @RequestBody ScheduleRequestDto dto,
             @AuthenticationPrincipal CustomUserDetails currentUser) {
         if (currentUser == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("?汝??吏??癲ル슢???뼘?????썹땟???嶺뚮ㅎ????");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인된 사용자가 없습니다.");
         }
 
         try {
             scheduleService.updateSchedule(id, dto, currentUser.getUser().getId());
-            return ResponseEntity.ok("???嚥싳쉶瑗ч뇡癒?낟??????볥궚???嶺???????");
+            return ResponseEntity.ok("일정이 성공적으로 수정되었습니다.");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
     /**
-     * ???嚥?????(???熬곣뫖?????잙갭큔筌??????醫딆쓧???
+     * 일정을 삭제합니다. (스터디 리더만 가능)
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteSchedule(
             @PathVariable Long id,
             @AuthenticationPrincipal CustomUserDetails currentUser) {
         if (currentUser == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("?汝??吏??癲ル슢???뼘?????썹땟???嶺뚮ㅎ????");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인된 사용자가 없습니다.");
         }
 
         try {
             scheduleService.deleteSchedule(id, currentUser.getUser().getId());
-            return ResponseEntity.ok("???嚥싳쉶瑗ч뇡癒?낟???????嶺???????");
+            return ResponseEntity.ok("일정이 성공적으로 삭제되었습니다.");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }

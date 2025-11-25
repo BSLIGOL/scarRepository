@@ -11,8 +11,8 @@ public class DashboardScheduleDto {
     private Long id;
     private String studyName;
     private String name;
-    private String date; // YYYY-MM-DD ??耀붾굝??????????⑤８??
-    private String time; // HH:MM ??耀붾굝??????????⑤８??(?????꿔꺂????????????롮쾸?椰????
+    private String date; // YYYY-MM-DD 형식
+    private String time; // HH:MM 형식 (시간순 정렬)
     private String location;
 
     public static DashboardScheduleDto from(com.scar.scar.schedule.domain.Schedule schedule) {
@@ -26,4 +26,3 @@ public class DashboardScheduleDto {
                 .build();
     }
 }
-

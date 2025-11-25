@@ -15,7 +15,7 @@ public class CustomUserDetails implements UserDetails {
         this.user = user;
     }
 
-    // ????濾?鶯?????????????????????
+    // 닉네임 반환
     public String getNickName() {
         return user.getNickName();
     }
@@ -32,23 +32,30 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public String getUsername() {
-        return user.getEmail(); // ???????????饔낅떽???嶺뚮슢竊????
+        return user.getEmail(); // 계정의 고유한 값을 리턴합니다 (여기서는 이메일)
     }
 
     @Override
-    public boolean isAccountNonExpired() { return true; }
+    public boolean isAccountNonExpired() {
+        return true;
+    }
 
     @Override
-    public boolean isAccountNonLocked() { return true; }
+    public boolean isAccountNonLocked() {
+        return true;
+    }
 
     @Override
-    public boolean isCredentialsNonExpired() { return true; }
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
 
     @Override
-    public boolean isEnabled() { return true; }
+    public boolean isEnabled() {
+        return true;
+    }
 
     public User getUser() {
         return user;
     }
 }
-
