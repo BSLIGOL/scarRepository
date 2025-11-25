@@ -1,0 +1,14 @@
+{
+  "version": 2,
+  "dgSpecHash": "sMycBqR5pVk=",
+  "success": true,
+  "projectFilePath": "C:\\scarRepository\\scarDesktop\\scarDesktop.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\choi\\.nuget\\packages\\communitytoolkit.mvvm\\8.2.2\\communitytoolkit.mvvm.8.2.2.nupkg.sha512",
+    "C:\\Users\\choi\\.nuget\\packages\\microsoft.web.webview2\\1.0.2651.64\\microsoft.web.webview2.1.0.2651.64.nupkg.sha512",
+    "C:\\Users\\choi\\.nuget\\packages\\microsoft.windows.sdk.buildtools\\10.0.26100.1742\\microsoft.windows.sdk.buildtools.10.0.26100.1742.nupkg.sha512",
+    "C:\\Users\\choi\\.nuget\\packages\\microsoft.windowsappsdk\\1.6.240829007\\microsoft.windowsappsdk.1.6.240829007.nupkg.sha512",
+    "C:\\Users\\choi\\.nuget\\packages\\microsoft.windows.sdk.net.ref\\10.0.19041.38\\microsoft.windows.sdk.net.ref.10.0.19041.38.nupkg.sha512"
+  ],
+  "logs": []
+}

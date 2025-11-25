@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
 import { Button } from '../components/ui/button';
-import { Badge } from '../components/ui/badge';
 import { Users, UserCircle, Plus } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { studyService } from '../api/services/studyService';
@@ -54,13 +53,8 @@ export default function StudyListPage() {
           <Link key={study.id} to={`/studies/${study.id}`}>
             <Card className="h-full hover:shadow-lg transition-shadow cursor-pointer">
               <CardHeader>
-                <CardTitle className="flex items-center justify-between">
-                  <span>{study.title}</span>
-                  <Badge
-                    variant={study.currentMemberCount >= study.maxMember ? 'secondary' : 'default'}
-                  >
-                    {study.currentMemberCount >= study.maxMember ? '마감' : '모집중'}
-                  </Badge>
+                <CardTitle>
+                  {study.title}
                 </CardTitle>
                 <CardDescription className="line-clamp-2">{study.content}</CardDescription>
               </CardHeader>

@@ -60,20 +60,20 @@ public class StudyService {
         @Transactional(readOnly = true)
         public StudyDetailDto getStudyDetail(Long studyId, Long currentUserId) {
                 Study study = studyRepository.findByIdWithCreatorAndMembers(studyId)
-                                .orElseThrow(() -> new RuntimeException("???????諛몃마???? ?????Β???????? ?????????????怨몄）."));
+                                .orElseThrow(() -> new RuntimeException("스터디를 찾을 수 없습니다."));
 
                 boolean joined = false;
                 boolean applied = false;
                 boolean isLeader = false;
 
-                // ????????遺얘턁????????⑤슢堉?????????????▲뀋????釉먮폁????
+                // 탈퇴하지 않은 멤버만 필터링
                 List<StudyMember> activeMembers = study.getMembers().stream()
                                 .filter(member -> member.getLeftAt() == null)
                                 .toList();
 
                 if (currentUserId != null) {
                         User user = userRepository.findById(currentUserId)
-                                        .orElseThrow(() -> new RuntimeException("?????? ?????Β???????? ?????????????怨몄）."));
+                                        .orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다."));
 
                         joined = activeMembers.stream()
                                         .anyMatch(member -> member.getUser().getId().equals(currentUserId));
@@ -81,13 +81,13 @@ public class StudyService {
                         applied = studyApplicationRepository.existsByUserAndStudyAndStatusIn(
                                         user, study, List.of(ApplyStatus.PENDING));
 
-                        // ??????좊틣??釉랁닕?????? ??耀붾굝??????????
+                        // 리더인지 확인
                         isLeader = activeMembers.stream()
                                         .anyMatch(member -> member.getUser().getId().equals(currentUserId)
                                                         && member.getStudyRole() == StudyRole.LEADER);
                 }
 
-                // ??????롮쾸?椰?????遺얘턁?????????遺얜??熬곣뫖釉멧벧猿뗪섭鴉????????Β??????
+                // 스케줄 목록 (멤버인 경우에만 조회)
                 List<DashboardScheduleDto> schedules = List.of();
                 if (joined) {
                         schedules = scheduleRepository.findAllByStudyId(studyId).stream()
@@ -115,48 +115,61 @@ public class StudyService {
         }
 
         /**
-         * ???????諛몃마????????怨뚮뼺?됰뗀???(??????좊틣??釉랁닕???????????ル뭽????
+         * 스터디 정보 수정 (리더만 가능)
          */
         @Transactional
         public void updateStudy(Long studyId, StudyRequestDto dto, Long userId) {
                 Study study = studyRepository.findById(studyId)
-                                .orElseThrow(() -> new IllegalArgumentException("???????諛몃마???? ??遺얘턁????????????????繹먮굞??????????怨몄）."));
+                                .orElseThrow(() -> new IllegalArgumentException("스터디를 찾을 수 없습니다."));
 
-                // ??????좊틣??釉랁닕????? ??耀붾굝??????????
+                // 리더인지 확인
                 boolean isLeader = studyMemberRepository.findAllByStudyId(studyId).stream()
                                 .anyMatch(member -> member.getUser().getId().equals(userId)
                                                 && member.getStudyRole() == StudyRole.LEADER
                                                 && member.getLeftAt() == null);
 
                 if (!isLeader) {
-                        throw new IllegalArgumentException("???????諛몃마?????????좊틣??釉랁닕??????????怨뚮뼺?됰뗀???????????????????怨몄）.");
+                        throw new IllegalArgumentException("스터디 리더만 수정할 수 있습니다.");
                 }
 
-                // ???????諛몃마?????耀붾굝??????????????怨뚮뼺?됰뗀???
+                // 스터디 정보 수정
                 study.updateInfo(dto.getTitle(), dto.getContent(), dto.getMaxMember());
                 studyRepository.save(study);
         }
 
         /**
-         * ???????諛몃마???????(??????좊틣??釉랁닕???????????ル뭽????
+         * 스터디 삭제 (리더만 가능)
          */
         @Transactional
         public void deleteStudy(Long studyId, Long userId) {
                 Study study = studyRepository.findById(studyId)
-                                .orElseThrow(() -> new IllegalArgumentException("???????諛몃마???? ??遺얘턁????????????????繹먮굞??????????怨몄）."));
+                                .orElseThrow(() -> new IllegalArgumentException("스터디를 찾을 수 없습니다."));
 
-                // ??????좊틣??釉랁닕????? ??耀붾굝??????????
+                // 리더인지 확인
                 boolean isLeader = studyMemberRepository.findAllByStudyId(studyId).stream()
                                 .anyMatch(member -> member.getUser().getId().equals(userId)
                                                 && member.getStudyRole() == StudyRole.LEADER
                                                 && member.getLeftAt() == null);
 
                 if (!isLeader) {
-                        throw new IllegalArgumentException("???????諛몃마?????????좊틣??釉랁닕?????????????????????????怨몄）.");
+                        throw new IllegalArgumentException("스터디 리더만 삭제할 수 있습니다.");
                 }
 
-                // ??????꾩룆梨띰쭕??????????袁④뎬??????饔낅떽????????????????대첐??
+                // 연관된 데이터 삭제 (소프트 삭제)
+                // 1. 스케줄 삭제
+                List<com.scar.scar.schedule.domain.Schedule> schedules = scheduleRepository.findAllByStudyId(studyId);
+                scheduleRepository.deleteAll(schedules);
+
+                // 2. 신청 내역 삭제
+                List<com.scar.scar.study.domain.StudyApplication> applications = studyApplicationRepository
+                                .findByStudy(study);
+                studyApplicationRepository.deleteAll(applications);
+
+                // 3. 멤버 삭제 (리더 포함)
+                List<StudyMember> members = studyMemberRepository.findAllByStudyId(studyId);
+                studyMemberRepository.deleteAll(members);
+
+                // 4. 스터디 삭제
                 studyRepository.delete(study);
         }
 }
-
