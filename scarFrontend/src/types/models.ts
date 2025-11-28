@@ -32,6 +32,12 @@ export interface AttendanceMember {
     status: AttendanceStatus;
 }
 
+export interface StudyMember {
+    userId: number;
+    nickName: string;
+    role: StudyRole;
+}
+
 export interface ScheduleDetail {
     id: number;
     title: string;
@@ -42,6 +48,7 @@ export interface ScheduleDetail {
     location: string;
     creatorNickName: string;
     members: AttendanceMember[];
+    isLeader: boolean;
 }
 
 export interface Schedule {
@@ -60,7 +67,7 @@ export interface StudyDetail {
     maxMember: number;
     creatorNickName: string;
     currentMemberCount: number;
-    memberNickNames: string[];
+    members: StudyMember[];
     joinedByCurrentUser: boolean;
     appliedByCurrentUser: boolean;
     isLeader: boolean;

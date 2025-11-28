@@ -15,13 +15,19 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '../components/ui/alert-dialog';
-import { Users, UserCircle, Calendar, ArrowLeft, Plus, UserCheck, Edit, Trash2 } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '../components/ui/dropdown-menu';
+import { Users, UserCircle, Calendar, ArrowLeft, Plus, UserCheck, Edit, Trash2, Crown } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { toast } from 'sonner';
 import { useState, useEffect } from 'react';
 import { studyService } from '../api/services/studyService';
 import { applicationService } from '../api/services/applicationService';
-import type { StudyDetail } from '../types/models';
+import type { StudyDetail, StudyMember } from '../types/models';
 
 export default function StudyDetailPage() {
   const { id } = useParams();
@@ -32,6 +38,8 @@ export default function StudyDetailPage() {
   const [applying, setApplying] = useState(false);
   const [applicationMessage, setApplicationMessage] = useState('');
   const [showApplicationDialog, setShowApplicationDialog] = useState(false);
+  const [delegateTargetMember, setDelegateTargetMember] = useState<StudyMember | null>(null);
+  const [showDelegateDialog, setShowDelegateDialog] = useState(false);
 
   useEffect(() => {
     const fetchStudyDetail = async () => {
@@ -133,6 +141,22 @@ export default function StudyDetailPage() {
     }
   };
 
+  const handleDelegateLeader = async () => {
+    if (!delegateTargetMember) return;
+
+    try {
+      await studyService.delegateLeader(study.id, delegateTargetMember.userId);
+      toast.success(`${delegateTargetMember.nickName}님에게 리더 권한을 위임했습니다.`);
+      // Refresh study data
+      const updatedStudy = await studyService.getStudyDetail(study.id);
+      setStudy(updatedStudy);
+      setShowDelegateDialog(false);
+      setDelegateTargetMember(null);
+    } catch (error) {
+      toast.error('권한 위임에 실패했습니다.');
+    }
+  };
+
   return (
     <div className="max-w-4xl mx-auto">
       <Button variant="ghost" onClick={() => navigate('/studies')} className="mb-6">
@@ -150,6 +174,34 @@ export default function StudyDetailPage() {
             {/* ⭐ 새로 추가: 리더에게만 보이는 수정/삭제 버튼 */}
             {isLeader && (
               <div className="flex gap-2">
+                {/* 권한 위임 버튼 */}
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" size="sm">
+                      <Crown className="size-4 mr-2" />
+                      권한 위임
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    {study.members
+                      .filter((member) => member.role !== 'LEADER')
+                      .map((member) => (
+                        <DropdownMenuItem
+                          key={member.userId}
+                          onClick={() => {
+                            setDelegateTargetMember(member);
+                            setShowDelegateDialog(true);
+                          }}
+                        >
+                          {member.nickName}
+                        </DropdownMenuItem>
+                      ))}
+                    {study.members.filter((member) => member.role !== 'LEADER').length === 0 && (
+                      <div className="p-2 text-sm text-muted-foreground">위임할 멤버가 없습니다.</div>
+                    )}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+
                 {/* 수정 버튼 */}
                 <Button variant="outline" size="sm" onClick={() => navigate(`/studies/${id}/edit`)}>
                   <Edit className="size-4 mr-2" />
@@ -178,6 +230,24 @@ export default function StudyDetailPage() {
                       >
                         삭제
                       </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+
+                {/* 권한 위임 확인 다이얼로그 */}
+                <AlertDialog open={showDelegateDialog} onOpenChange={setShowDelegateDialog}>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>리더 권한 위임</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        정말로 {delegateTargetMember?.nickName}님에게 리더 권한을 위임하시겠습니까?
+                        <br />
+                        위임 후에는 일반 멤버로 변경됩니다.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel onClick={() => setDelegateTargetMember(null)}>취소</AlertDialogCancel>
+                      <AlertDialogAction onClick={handleDelegateLeader}>확인</AlertDialogAction>
                     </AlertDialogFooter>
                   </AlertDialogContent>
                 </AlertDialog>
@@ -215,10 +285,10 @@ export default function StudyDetailPage() {
           <div className="border-t pt-6">
             <h3 className="text-lg mb-3">스터디 멤버</h3>
             <div className="flex flex-wrap gap-2">
-              {study.memberNickNames.map((nickName: string, index: number) => (
+              {study.members.map((member, index) => (
                 <Badge key={index} variant="outline">
-                  {nickName}
-                  {nickName === study.creatorNickName && ' (리더)'}
+                  {member.nickName}
+                  {member.role === 'LEADER' && ' (리더)'}
                 </Badge>
               ))}
             </div>

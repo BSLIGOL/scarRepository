@@ -124,7 +124,7 @@ export default function ScheduleDetailPage() {
                 We might need to check if current user is the creator of the schedule or fetch study info.
                 For now, we will assume `creatorNickName` exists in ScheduleDetail (it does in models.ts) and compare.
              */}
-            {user?.nickName === schedule.creatorNickName && (
+            {schedule.isLeader && (
               <div className="flex gap-2">
                 {/* 수정 버튼 */}
                 <Button variant="outline" size="sm" onClick={() => navigate(`/schedules/${id}/edit`)}>

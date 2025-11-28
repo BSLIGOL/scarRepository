@@ -43,7 +43,7 @@ public class ScheduleService {
 
         /** 일정 상세 정보를 조회합니다. */
         @Transactional(readOnly = true)
-        public ScheduleDetailDto getScheduleDetail(Long scheduleId) {
+        public ScheduleDetailDto getScheduleDetail(Long scheduleId, Long currentUserId) {
 
                 Schedule schedule = scheduleRepository.findById(scheduleId)
                                 .orElseThrow(() -> new IllegalArgumentException(
@@ -69,7 +69,15 @@ public class ScheduleService {
                                 })
                                 .toList();
 
-                return ScheduleDetailDto.of(schedule, members);
+                boolean isLeader = false;
+                if (currentUserId != null) {
+                        isLeader = studyMembers.stream()
+                                        .anyMatch(member -> member.getUser().getId().equals(currentUserId)
+                                                        && member.getStudyRole() == StudyRole.LEADER
+                                                        && member.getLeftAt() == null);
+                }
+
+                return ScheduleDetailDto.of(schedule, members, isLeader);
         }
 
         /** 일정을 생성합니다. */

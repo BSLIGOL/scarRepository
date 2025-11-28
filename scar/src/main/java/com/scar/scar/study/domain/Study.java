@@ -7,7 +7,7 @@ import com.scar.scar.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.Where;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +20,7 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @SQLDelete(sql = "UPDATE studies SET deleted_at = NOW() WHERE id = ?")
-@Where(clause = "deleted_at IS NULL")
+@SQLRestriction("deleted_at IS NULL")
 public class Study extends BaseEntity {
 
     @Id

@@ -31,4 +31,13 @@ export const studyService = {
         const response = await apiClient.delete(`/studies/${id}`);
         return response.data;
     },
+
+    delegateLeader: async (studyId: number, newLeaderId: number) => {
+        const response = await apiClient.post(`/studies/${studyId}/delegate`, newLeaderId, {
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+        return response.data;
+    },
 };

@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("scarDesktop")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+6a9d299d07ea85eb5139576f1edf1fec88c7e7c7")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+6890954bbc976e5425ba6f1392cd1c61008bf744")]
 [assembly: System.Reflection.AssemblyProductAttribute("scarDesktop")]
 [assembly: System.Reflection.AssemblyTitleAttribute("scarDesktop")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

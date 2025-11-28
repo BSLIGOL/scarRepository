@@ -56,10 +56,8 @@ export default function EditSchedulePage() {
     );
   }
 
-  // Note: ScheduleDetail might not have studyLeaderId directly. 
-  // We need to check if the current user is the creator of the schedule (or study leader if available).
-  // Assuming creatorNickName is available and we compare with user.nickName
-  const isLeader = isAuthenticated && schedule.creatorNickName === user?.nickName;
+  // Check if the current user is the study leader
+  const isLeader = isAuthenticated && schedule.isLeader;
 
   if (!isLeader) {
     return (

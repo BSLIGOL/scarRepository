@@ -21,8 +21,11 @@ public class ScheduleController {
 
     /** 일정 상세 정보를 조회합니다. */
     @GetMapping("/{scheduleId}")
-    public ResponseEntity<ScheduleDetailDto> getScheduleDetail(@PathVariable Long scheduleId) {
-        ScheduleDetailDto scheduleDetailDto = scheduleService.getScheduleDetail(scheduleId);
+    public ResponseEntity<ScheduleDetailDto> getScheduleDetail(
+            @PathVariable Long scheduleId,
+            @AuthenticationPrincipal CustomUserDetails currentUser) {
+        Long userId = (currentUser != null) ? currentUser.getUser().getId() : null;
+        ScheduleDetailDto scheduleDetailDto = scheduleService.getScheduleDetail(scheduleId, userId);
         return ResponseEntity.ok(scheduleDetailDto);
     }
 

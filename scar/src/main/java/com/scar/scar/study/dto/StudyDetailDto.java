@@ -1,7 +1,6 @@
 package com.scar.scar.study.dto;
 
 import com.scar.scar.schedule.dto.DashboardScheduleDto;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Getter;
@@ -17,7 +16,7 @@ public class StudyDetailDto {
     private int maxMember;
     private String creatorNickName;
     private long currentMemberCount;
-    private List<String> memberNickNames;
+    private List<StudyMemberDto> members;
     private boolean joinedByCurrentUser;
     private boolean appliedByCurrentUser;
     @JsonProperty("isLeader")
@@ -25,7 +24,7 @@ public class StudyDetailDto {
     private List<DashboardScheduleDto> schedules;
 
     public static StudyDetailDto of(com.scar.scar.study.domain.Study study, int currentMemberCount,
-            List<String> memberNickNames, boolean joined, boolean applied, boolean isLeader,
+            List<StudyMemberDto> members, boolean joined, boolean applied, boolean isLeader,
             List<DashboardScheduleDto> schedules) {
         return StudyDetailDto.builder()
                 .id(study.getId())
@@ -34,7 +33,7 @@ public class StudyDetailDto {
                 .maxMember(study.getMaxMember())
                 .currentMemberCount(currentMemberCount)
                 .creatorNickName(study.getCreator().getNickName())
-                .memberNickNames(memberNickNames)
+                .members(members)
                 .joinedByCurrentUser(joined)
                 .appliedByCurrentUser(applied)
                 .isLeader(isLeader)
@@ -42,4 +41,3 @@ public class StudyDetailDto {
                 .build();
     }
 }
-

@@ -105,4 +105,24 @@ public class StudyController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
+    /**
+     * 스터디 리더 권한을 위임합니다. (스터디 리더만 가능)
+     */
+    @PostMapping("/{id}/delegate")
+    public ResponseEntity<?> delegateLeader(
+            @PathVariable Long id,
+            @RequestBody Long newLeaderId,
+            @AuthenticationPrincipal CustomUserDetails currentUser) {
+        if (currentUser == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인된 사용자가 없습니다.");
+        }
+
+        try {
+            studyService.delegateLeader(id, newLeaderId, currentUser.getUser().getId());
+            return ResponseEntity.ok("스터디 리더 권한이 위임되었습니다.");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 }

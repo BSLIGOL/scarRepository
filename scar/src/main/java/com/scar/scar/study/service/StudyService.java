@@ -10,6 +10,7 @@ import com.scar.scar.study.dto.DashboardStudyDto;
 import com.scar.scar.study.dto.StudyDetailDto;
 import com.scar.scar.study.dto.StudyRequestDto;
 import com.scar.scar.study.dto.StudyResponseDto;
+import com.scar.scar.study.dto.StudyMemberDto;
 import com.scar.scar.schedule.repository.ScheduleRepository;
 import com.scar.scar.study.repository.StudyApplicationRepository;
 import com.scar.scar.study.repository.StudyMemberRepository;
@@ -96,7 +97,7 @@ public class StudyService {
                 }
 
                 return StudyDetailDto.of(study, activeMembers.size(),
-                                activeMembers.stream().map(member -> member.getUser().getNickName()).toList(),
+                                activeMembers.stream().map(StudyMemberDto::from).toList(),
                                 joined, applied, isLeader, schedules);
         }
 
@@ -171,5 +172,43 @@ public class StudyService {
 
                 // 4. 스터디 삭제
                 studyRepository.delete(study);
+        }
+
+        /**
+         * 스터디 리더 권한 위임
+         */
+        @Transactional
+        public void delegateLeader(Long studyId, Long newLeaderId, Long currentLeaderId) {
+                Study study = studyRepository.findById(studyId)
+                                .orElseThrow(() -> new IllegalArgumentException("스터디를 찾을 수 없습니다."));
+
+                // 현재 리더 확인
+                StudyMember currentLeader = studyMemberRepository.findByUserAndStudy(
+                                userRepository.getReferenceById(currentLeaderId), study)
+                                .orElseThrow(() -> new IllegalArgumentException("리더 정보를 찾을 수 없습니다."));
+
+                if (currentLeader.getStudyRole() != StudyRole.LEADER) {
+                        throw new IllegalArgumentException("스터디 리더만 권한을 위임할 수 있습니다.");
+                }
+
+                // 새 리더 확인
+                StudyMember newLeader = studyMemberRepository.findByUserAndStudy(
+                                userRepository.getReferenceById(newLeaderId), study)
+                                .orElseThrow(() -> new IllegalArgumentException("위임할 멤버를 찾을 수 없습니다."));
+
+                if (newLeader.getLeftAt() != null) {
+                        throw new IllegalArgumentException("탈퇴한 멤버에게는 위임할 수 없습니다.");
+                }
+
+                // 역할 변경
+                currentLeader.setStudyRole(StudyRole.MEMBER);
+                newLeader.setStudyRole(StudyRole.LEADER);
+
+                // 스터디 생성자 정보 업데이트 (선택 사항이지만 일관성을 위해 권장)
+                study.setCreator(newLeader.getUser());
+
+                studyMemberRepository.save(currentLeader);
+                studyMemberRepository.save(newLeader);
+                studyRepository.save(study);
         }
 }

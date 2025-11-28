@@ -1,6 +1,7 @@
 package com.scar.scar.schedule.dto;
 
 import com.scar.scar.schedule.domain.Schedule;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -22,7 +23,10 @@ public class ScheduleDetailDto {
     private String creatorNickName;
     private List<AttendanceMemberDto> members;
 
-    public static ScheduleDetailDto of(Schedule schedule, List<AttendanceMemberDto> members) {
+    @JsonProperty("isLeader")
+    private boolean isLeader;
+
+    public static ScheduleDetailDto of(Schedule schedule, List<AttendanceMemberDto> members, boolean isLeader) {
         return ScheduleDetailDto.builder()
                 .id(schedule.getId())
                 .title(schedule.getTitle())
@@ -33,8 +37,8 @@ public class ScheduleDetailDto {
                 .location(schedule.getLocation())
                 .creatorNickName(schedule.getCreatedBy().getNickName())
                 .members(members)
+                .isLeader(isLeader)
                 .build();
     }
 
 }
-
