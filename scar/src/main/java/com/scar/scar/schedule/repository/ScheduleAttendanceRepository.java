@@ -13,5 +13,6 @@ public interface ScheduleAttendanceRepository extends JpaRepository<ScheduleAtte
     List<ScheduleAttendance> findAllByScheduleId(Long scheduleId);
 
     Optional<ScheduleAttendance> findByScheduleAndStudyMember(Schedule schedule, StudyMember studyMember);
-}
 
+    List<ScheduleAttendance> findAllByStudyMemberIn(List<StudyMember> studyMembers);
+}

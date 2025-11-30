@@ -24,5 +24,6 @@ public interface StudyApplicationRepository extends JpaRepository<StudyApplicati
     boolean existsByUserAndStudyAndStatusIn(User user, Study study, List<ApplyStatus> statuses);
 
     boolean existsByUserAndStudyAndStatus(User user, Study study, ApplyStatus status);
-}
 
+    List<StudyApplication> findAllByUser(User user);
+}

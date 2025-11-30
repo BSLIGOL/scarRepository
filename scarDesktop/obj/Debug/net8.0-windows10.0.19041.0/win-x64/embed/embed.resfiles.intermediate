@@ -1,4 +1,8 @@
 App.xbf
 MainWindow.xbf
+Views\CreateStudyPage.xbf
 Views\LoginPage.xbf
 Views\MainPage.xbf
+Views\SignupPage.xbf
+Views\StudyDetailPage.xbf
+Views\StudyListPage.xbf

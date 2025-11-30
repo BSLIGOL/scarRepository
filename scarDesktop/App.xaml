@@ -2,7 +2,8 @@
     x:Class="scarDesktop.App"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:scarDesktop">
+    xmlns:local="using:scarDesktop"
+    xmlns:converters="using:scarDesktop.Converters">
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -10,8 +11,10 @@
             </ResourceDictionary.MergedDictionaries>
             
             <!-- Converters -->
-            <local:BoolNegationConverter x:Key="BoolNegationConverter" xmlns:local="using:scarDesktop.Converters" />
-            <local:IntToVisibilityConverter x:Key="IntToVisibilityConverter" xmlns:local="using:scarDesktop.Converters" />
+            <converters:BoolNegationConverter x:Key="BoolNegationConverter" />
+            <converters:IntToVisibilityConverter x:Key="IntToVisibilityConverter" />
+            <converters:RoleToVisibilityConverter x:Key="RoleToVisibilityConverter" />
+            <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
         </ResourceDictionary>
     </Application.Resources>
 </Application>

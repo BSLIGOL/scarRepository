@@ -28,5 +28,6 @@ public interface StudyMemberRepository extends JpaRepository<StudyMember, Long> 
     Optional<StudyMember> findByStudyIdAndUserId(Long studyId, Long userId);
 
     boolean existsByUserAndStudyAndLeftAtIsNull(User user, Study study);
-}
 
+    boolean existsByUserAndStudyRole(User user, StudyRole studyRole);
+}

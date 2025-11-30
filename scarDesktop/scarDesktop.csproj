@@ -27,6 +27,18 @@
     <Page Include="Views\LoginPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\SignupPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\StudyListPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\StudyDetailPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\CreateStudyPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\MainPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -1,0 +1,36 @@
+<Page
+    x:Class="scarDesktop.Views.SignupPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:viewmodels="using:scarDesktop.ViewModels"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Page.DataContext>
+        <viewmodels:SignupViewModel />
+    </Page.DataContext>
+
+    <Grid>
+        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Width="300" Spacing="10">
+            <TextBlock Text="회원가입" FontSize="24" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,20"/>
+
+            <TextBox Header="이메일" Text="{Binding Email, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" PlaceholderText="example@email.com"/>
+            <TextBox Header="닉네임" Text="{Binding NickName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" PlaceholderText="닉네임"/>
+            <PasswordBox Header="비밀번호" PasswordChanged="PasswordBox_PasswordChanged" PlaceholderText="••••••••"/>
+            <PasswordBox Header="비밀번호 확인" PasswordChanged="ConfirmPasswordBox_PasswordChanged" PlaceholderText="••••••••"/>
+
+            <TextBlock Text="{Binding ErrorMessage}" Foreground="Red" TextWrapping="Wrap" />
+
+            <Button Command="{Binding SignupCommand}" Content="회원가입" HorizontalAlignment="Stretch" IsEnabled="{Binding IsLoading, Converter={StaticResource BoolNegationConverter}}"/>
+
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,10,0,0">
+                <TextBlock Text="이미 계정이 있으신가요? " Foreground="Gray"/>
+                <HyperlinkButton Content="로그인" Click="LoginButton_Click" Padding="0"/>
+            </StackPanel>
+            
+            <ProgressRing IsActive="{Binding IsLoading}" HorizontalAlignment="Center" />
+        </StackPanel>
+    </Grid>
+</Page>

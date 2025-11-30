@@ -5,7 +5,7 @@ namespace scarDesktop.Models
     public class DashboardStudy
     {
         [JsonPropertyName("id")]
-        public long Id { get; set; }
+        public int Id { get; set; }
 
         [JsonPropertyName("name")]
         public string Name { get; set; }

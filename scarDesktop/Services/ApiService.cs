@@ -56,9 +56,33 @@ namespace scarDesktop.Services
                 return default;
             }
 
-            var responseJson = await response.Content.ReadAsStringAsync();
-            var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-            return JsonSerializer.Deserialize<T>(responseJson, options);
+            var responseString = await response.Content.ReadAsStringAsync();
+
+            // 응답이 비어있으면 default 반환
+            if (string.IsNullOrWhiteSpace(responseString))
+            {
+                return default;
+            }
+
+            try
+            {
+                var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+                return JsonSerializer.Deserialize<T>(responseString, options);
+            }
+            catch (JsonException)
+            {
+                // JSON 파싱 실패 시 (단순 문자열 반환 등)
+                // T가 string이면 문자열 그대로 반환
+                if (typeof(T) == typeof(string))
+                {
+                    return (T)(object)responseString;
+                }
+
+                // T가 object이고 응답이 단순 문자열인 경우, 문자열을 담은 익명 객체나 딕셔너리로 반환하거나
+                // 여기서는 그냥 null 반환하고 로그 남김 (혹은 예외 처리)
+                System.Console.WriteLine($"[ApiService] JSON parsing failed for response: {responseString}");
+                return default;
+            }
         }
 
         public async Task<HttpResponseMessage> LoginWithFormAsync(string endpoint, Dictionary<string, string> data)

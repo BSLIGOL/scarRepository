@@ -23,6 +23,11 @@
             
             <Button Content="Login" Command="{Binding LoginCommand}" HorizontalAlignment="Stretch"/>
             
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,10,0,0">
+                <TextBlock Text="Don't have an account? " Foreground="Gray"/>
+                <HyperlinkButton Content="Sign up" Click="SignupButton_Click" Padding="0"/>
+            </StackPanel>
+
             <ProgressRing IsActive="{Binding IsLoading}" />
         </StackPanel>
     </Grid>

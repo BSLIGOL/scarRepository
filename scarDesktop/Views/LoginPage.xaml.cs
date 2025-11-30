@@ -27,5 +27,10 @@ namespace scarDesktop.Views
                 viewModel.Password = ((PasswordBox)sender).Password;
             }
         }
+
+        private void SignupButton_Click(object sender, RoutedEventArgs e)
+        {
+            Frame.Navigate(typeof(SignupPage));
+        }
     }
 }
