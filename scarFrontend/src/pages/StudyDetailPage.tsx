@@ -2,6 +2,8 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
+import { Label } from '../components/ui/label';
+import { Textarea } from '../components/ui/textarea';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -13,13 +15,19 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '../components/ui/alert-dialog';
-import { Users, UserCircle, Calendar, ArrowLeft, Plus, UserCheck, Edit, Trash2 } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '../components/ui/dropdown-menu';
+import { Users, UserCircle, Calendar, ArrowLeft, Plus, UserCheck, Edit, Trash2, Crown } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { toast } from 'sonner';
 import { useState, useEffect } from 'react';
 import { studyService } from '../api/services/studyService';
 import { applicationService } from '../api/services/applicationService';
-import type { StudyDetail } from '../types/models';
+import type { StudyDetail, StudyMember } from '../types/models';
 
 export default function StudyDetailPage() {
   const { id } = useParams();
@@ -28,6 +36,10 @@ export default function StudyDetailPage() {
   const [study, setStudy] = useState<StudyDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [applying, setApplying] = useState(false);
+  const [applicationMessage, setApplicationMessage] = useState('');
+  const [showApplicationDialog, setShowApplicationDialog] = useState(false);
+  const [delegateTargetMember, setDelegateTargetMember] = useState<StudyMember | null>(null);
+  const [showDelegateDialog, setShowDelegateDialog] = useState(false);
 
   useEffect(() => {
     const fetchStudyDetail = async () => {
@@ -92,13 +104,20 @@ export default function StudyDetailPage() {
       return;
     }
 
+    if (!applicationMessage.trim()) {
+      toast.error('신청 메시지를 입력해주세요.');
+      return;
+    }
+
     setApplying(true);
     try {
-      await applicationService.applyToStudy(study.id, '스터디 참여 희망합니다.'); // Message prompt could be added
+      await applicationService.applyToStudy(study.id, applicationMessage);
       toast.success('스터디 가입을 신청했습니다. 리더의 승인을 기다려주세요.');
       // Refresh study data to update appliedByCurrentUser status
       const updatedStudy = await studyService.getStudyDetail(study.id);
       setStudy(updatedStudy);
+      setShowApplicationDialog(false);
+      setApplicationMessage('');
     } catch (error) {
       toast.error('스터디 신청에 실패했습니다.');
     } finally {
@@ -114,12 +133,27 @@ export default function StudyDetailPage() {
   // ⭐ 새로 추가: 스터디 삭제 핸들러 (리더만 사용)
   const handleDeleteStudy = async () => {
     try {
-      // Mock API call - Spring Boot 백엔드 연결 시 실제 API 호출
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      await studyService.deleteStudy(study.id);
       toast.success('스터디가 삭제되었습니다.');
       navigate('/studies');
     } catch (error) {
       toast.error('스터디 삭제에 실패했습니다.');
+    }
+  };
+
+  const handleDelegateLeader = async () => {
+    if (!delegateTargetMember) return;
+
+    try {
+      await studyService.delegateLeader(study.id, delegateTargetMember.userId);
+      toast.success(`${delegateTargetMember.nickName}님에게 리더 권한을 위임했습니다.`);
+      // Refresh study data
+      const updatedStudy = await studyService.getStudyDetail(study.id);
+      setStudy(updatedStudy);
+      setShowDelegateDialog(false);
+      setDelegateTargetMember(null);
+    } catch (error) {
+      toast.error('권한 위임에 실패했습니다.');
     }
   };
 
@@ -134,19 +168,40 @@ export default function StudyDetailPage() {
         <CardHeader>
           <div className="flex items-start justify-between gap-4">
             <div className="flex-1">
-              <div className="flex items-center gap-3 mb-2">
-                <CardTitle className="text-3xl">{study.title}</CardTitle>
-                <Badge
-                  variant={study.currentMemberCount >= study.maxMember ? 'secondary' : 'default'}
-                >
-                  {study.currentMemberCount >= study.maxMember ? '마감' : '모집중'}
-                </Badge>
-              </div>
+              <CardTitle className="text-3xl mb-2">{study.title}</CardTitle>
               <CardDescription className="text-base">{study.content}</CardDescription>
             </div>
             {/* ⭐ 새로 추가: 리더에게만 보이는 수정/삭제 버튼 */}
             {isLeader && (
               <div className="flex gap-2">
+                {/* 권한 위임 버튼 */}
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" size="sm">
+                      <Crown className="size-4 mr-2" />
+                      권한 위임
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    {study.members
+                      .filter((member) => member.role !== 'LEADER')
+                      .map((member) => (
+                        <DropdownMenuItem
+                          key={member.userId}
+                          onClick={() => {
+                            setDelegateTargetMember(member);
+                            setShowDelegateDialog(true);
+                          }}
+                        >
+                          {member.nickName}
+                        </DropdownMenuItem>
+                      ))}
+                    {study.members.filter((member) => member.role !== 'LEADER').length === 0 && (
+                      <div className="p-2 text-sm text-muted-foreground">위임할 멤버가 없습니다.</div>
+                    )}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+
                 {/* 수정 버튼 */}
                 <Button variant="outline" size="sm" onClick={() => navigate(`/studies/${id}/edit`)}>
                   <Edit className="size-4 mr-2" />
@@ -175,6 +230,24 @@ export default function StudyDetailPage() {
                       >
                         삭제
                       </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+
+                {/* 권한 위임 확인 다이얼로그 */}
+                <AlertDialog open={showDelegateDialog} onOpenChange={setShowDelegateDialog}>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>리더 권한 위임</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        정말로 {delegateTargetMember?.nickName}님에게 리더 권한을 위임하시겠습니까?
+                        <br />
+                        위임 후에는 일반 멤버로 변경됩니다.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel onClick={() => setDelegateTargetMember(null)}>취소</AlertDialogCancel>
+                      <AlertDialogAction onClick={handleDelegateLeader}>확인</AlertDialogAction>
                     </AlertDialogFooter>
                   </AlertDialogContent>
                 </AlertDialog>
@@ -212,10 +285,10 @@ export default function StudyDetailPage() {
           <div className="border-t pt-6">
             <h3 className="text-lg mb-3">스터디 멤버</h3>
             <div className="flex flex-wrap gap-2">
-              {study.memberNickNames.map((nickName: string, index: number) => (
+              {study.members.map((member, index) => (
                 <Badge key={index} variant="outline">
-                  {nickName}
-                  {nickName === study.creatorNickName && ' (리더)'}
+                  {member.nickName}
+                  {member.role === 'LEADER' && ' (리더)'}
                 </Badge>
               ))}
             </div>
@@ -223,9 +296,55 @@ export default function StudyDetailPage() {
 
           {!study.joinedByCurrentUser && !study.appliedByCurrentUser && (
             <div className="mt-6">
-              <Button onClick={handleJoinStudy} disabled={study.currentMemberCount >= study.maxMember || applying}>
-                {study.currentMemberCount >= study.maxMember ? '정원 마감' : (applying ? '신청 중...' : '스터디 참여 신청')}
-              </Button>
+              <AlertDialog open={showApplicationDialog} onOpenChange={setShowApplicationDialog}>
+                <AlertDialogTrigger asChild>
+                  <Button
+                    disabled={study.currentMemberCount >= study.maxMember}
+                    onClick={() => {
+                      if (!isAuthenticated) {
+                        toast.error('로그인이 필요합니다.');
+                        navigate('/login');
+                        return;
+                      }
+                      setShowApplicationDialog(true);
+                    }}
+                  >
+                    {study.currentMemberCount >= study.maxMember ? '정원 마감' : '스터디 참여 신청'}
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>스터디 참여 신청</AlertDialogTitle>
+                    <AlertDialogDescription asChild>
+                      <div className="space-y-4">
+                        <p>리더에게 전달할 신청 메시지를 작성해주세요.</p>
+                        <div className="space-y-2">
+                          <Label htmlFor="applicationMessage">신청 메시지</Label>
+                          <Textarea
+                            id="applicationMessage"
+                            placeholder="예: 알고리즘 공부에 관심이 많아 신청합니다. 열심히 참여하겠습니다!"
+                            value={applicationMessage}
+                            onChange={(e) => setApplicationMessage(e.target.value)}
+                            rows={4}
+                            className="resize-none"
+                          />
+                        </div>
+                      </div>
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel onClick={() => setApplicationMessage('')}>
+                      취소
+                    </AlertDialogCancel>
+                    <AlertDialogAction
+                      onClick={handleJoinStudy}
+                      disabled={applying || !applicationMessage.trim()}
+                    >
+                      {applying ? '신청 중...' : '신청하기'}
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
             </div>
           )}
 

@@ -104,7 +104,7 @@ export default function ProfilePage() {
       logout();
       navigate('/');
     } catch (error) {
-      toast.error('회원 탈퇴에 실패했습니다.');
+      toast.error('회원 탈퇴에 실패했습니다. 스터디 리더인 경우 리더를 위임해야 탈퇴할 수 있습니다.');
     }
   };
 

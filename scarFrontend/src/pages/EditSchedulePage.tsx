@@ -11,6 +11,7 @@ import { useAuth } from '../contexts/AuthContext';
 
 import { scheduleService } from '../api/services/scheduleService';
 import type { ScheduleDetail } from '../types/models';
+import { toKSTISOString, fromISOStringToLocal } from '../utils/dateUtils';
 
 export default function EditSchedulePage() {
   const { id } = useParams();
@@ -21,7 +22,8 @@ export default function EditSchedulePage() {
   const [schedule, setSchedule] = useState<ScheduleDetail | null>(null);
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
-  const [date, setDate] = useState('');
+  const [startTime, setStartTime] = useState('');
+  const [endTime, setEndTime] = useState('');
   const [location, setLocation] = useState('');
 
   useEffect(() => {
@@ -32,9 +34,9 @@ export default function EditSchedulePage() {
         setSchedule(data);
         setName(data.title);
         setDescription(data.content);
-        // Format date for input type="date" if needed, or just use string if format matches
-        // Assuming data.startTime is ISO string, we might need to extract YYYY-MM-DD
-        setDate(data.startTime.split('T')[0]);
+        // Convert ISO string to datetime-local format (YYYY-MM-DDTHH:mm)
+        setStartTime(fromISOStringToLocal(data.startTime));
+        setEndTime(fromISOStringToLocal(data.endTime));
         setLocation(data.location);
       } catch (error) {
         console.error('Failed to fetch schedule', error);
@@ -54,10 +56,8 @@ export default function EditSchedulePage() {
     );
   }
 
-  // Note: ScheduleDetail might not have studyLeaderId directly. 
-  // We need to check if the current user is the creator of the schedule (or study leader if available).
-  // Assuming creatorNickName is available and we compare with user.nickName
-  const isLeader = isAuthenticated && schedule.creatorNickName === user?.nickName;
+  // Check if the current user is the study leader
+  const isLeader = isAuthenticated && schedule.isLeader;
 
   if (!isLeader) {
     return (
@@ -72,31 +72,29 @@ export default function EditSchedulePage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!name || !description || !date || !location) {
+    if (!name || !description || !startTime || !endTime || !location) {
       toast.error('모든 필드를 입력해주세요.');
+      return;
+    }
+
+    // Validate that endTime is after startTime
+    if (new Date(endTime) <= new Date(startTime)) {
+      toast.error('종료 시간은 시작 시간보다 늦어야 합니다.');
       return;
     }
 
     setLoading(true);
     try {
-      // Construct start and end time properly. 
-      // For now, we'll just use the date and keep the original time or set default.
-      // Since we only have date input, let's assume we keep original time or set to 00:00
-      // Or better, if we had a time input. But for now, let's just use the date.
-      // Actually, ScheduleRequest needs startTime and endTime as ISO strings.
-      // We should probably preserve the time from the original schedule if not editing time.
-      const originalTime = schedule?.startTime.split('T')[1] || '00:00:00';
-      const startTime = `${date}T${originalTime}`;
-      // End time - assuming 1 hour duration or keeping original end time duration
-      // For simplicity, let's just use the same logic or original endTime
-      const endTime = schedule?.endTime ? `${date}T${schedule.endTime.split('T')[1]}` : startTime;
+      // Convert datetime-local to ISO string with Korea timezone (UTC+9)
+      const formattedStartTime = toKSTISOString(startTime);
+      const formattedEndTime = toKSTISOString(endTime);
 
       await scheduleService.updateSchedule(Number(id), {
-        studyId: schedule?.studyId || 0, // We need studyId, assuming it's in schedule detail
+        studyId: schedule?.studyId || 0,
         title: name,
         content: description,
-        startTime,
-        endTime,
+        startTime: formattedStartTime,
+        endTime: formattedEndTime,
         location,
       });
       toast.success('일정이 수정되었습니다!');
@@ -146,12 +144,23 @@ export default function EditSchedulePage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="date">날짜</Label>
+              <Label htmlFor="startTime">시작 시간</Label>
               <Input
-                id="date"
-                type="date"
-                value={date}
-                onChange={(e) => setDate(e.target.value)}
+                id="startTime"
+                type="datetime-local"
+                value={startTime}
+                onChange={(e) => setStartTime(e.target.value)}
+                required
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="endTime">종료 시간</Label>
+              <Input
+                id="endTime"
+                type="datetime-local"
+                value={endTime}
+                onChange={(e) => setEndTime(e.target.value)}
                 required
               />
             </div>

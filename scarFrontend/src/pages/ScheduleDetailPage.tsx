@@ -96,8 +96,7 @@ export default function ScheduleDetailPage() {
   // ⭐ 새로 추가: 일정 삭제 핸들러 (리더만 사용)
   const handleDeleteSchedule = async () => {
     try {
-      // Mock API call - Spring Boot 백엔드 연결 시 실제 API 호출
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      await scheduleService.deleteSchedule(schedule.id);
       toast.success('일정이 삭제되었습니다.');
       navigate(`/studies/${schedule.studyId}`);
     } catch (error) {
@@ -125,7 +124,7 @@ export default function ScheduleDetailPage() {
                 We might need to check if current user is the creator of the schedule or fetch study info.
                 For now, we will assume `creatorNickName` exists in ScheduleDetail (it does in models.ts) and compare.
              */}
-            {user?.nickName === schedule.creatorNickName && (
+            {schedule.isLeader && (
               <div className="flex gap-2">
                 {/* 수정 버튼 */}
                 <Button variant="outline" size="sm" onClick={() => navigate(`/schedules/${id}/edit`)}>
@@ -169,8 +168,11 @@ export default function ScheduleDetailPage() {
             <div className="flex items-center gap-3 p-4 rounded-lg bg-accent">
               <Calendar className="size-5 text-primary" />
               <div>
-                <p className="text-sm text-muted-foreground">날짜</p>
-                <p>{new Date(schedule.startTime).toLocaleDateString()} {new Date(schedule.startTime).toLocaleTimeString()}</p>
+                <p className="text-sm text-muted-foreground">일시</p>
+                <p>
+                  {new Date(schedule.startTime).toLocaleDateString()} {new Date(schedule.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  {schedule.endTime && ` ~ ${new Date(schedule.endTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`}
+                </p>
               </div>
             </div>
             <div className="flex items-center gap-3 p-4 rounded-lg bg-accent">

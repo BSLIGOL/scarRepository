@@ -8,12 +8,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../co
 import { toast } from 'sonner';
 import { ArrowLeft } from 'lucide-react';
 import { scheduleService } from '../api/services/scheduleService';
+import { toKSTISOString } from '../utils/dateUtils';
 
 export default function CreateSchedulePage() {
   const { studyId } = useParams();
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [startTime, setStartTime] = useState('');
+  const [endTime, setEndTime] = useState('');
   const [location, setLocation] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -21,8 +23,14 @@ export default function CreateSchedulePage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!title || !content || !startTime || !location) {
+    if (!title || !content || !startTime || !endTime || !location) {
       toast.error('모든 필드를 입력해주세요.');
+      return;
+    }
+
+    // Validate that endTime is after startTime
+    if (new Date(endTime) <= new Date(startTime)) {
+      toast.error('종료 시간은 시작 시간보다 늦어야 합니다.');
       return;
     }
 
@@ -33,13 +41,9 @@ export default function CreateSchedulePage() {
 
     setLoading(true);
     try {
-      // Convert datetime-local string to ISO format
-      const start = new Date(startTime);
-      const formattedStartTime = start.toISOString();
-
-      // Default duration 1 hour for now
-      const end = new Date(start.getTime() + 60 * 60 * 1000);
-      const formattedEndTime = end.toISOString();
+      // Convert datetime-local to ISO string with Korea timezone (UTC+9)
+      const formattedStartTime = toKSTISOString(startTime);
+      const formattedEndTime = toKSTISOString(endTime);
 
       await scheduleService.createSchedule({
         studyId: Number(studyId),
@@ -96,12 +100,23 @@ export default function CreateSchedulePage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="startTime">일시</Label>
+              <Label htmlFor="startTime">시작 시간</Label>
               <Input
                 id="startTime"
                 type="datetime-local"
                 value={startTime}
                 onChange={(e) => setStartTime(e.target.value)}
+                required
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="endTime">종료 시간</Label>
+              <Input
+                id="endTime"
+                type="datetime-local"
+                value={endTime}
+                onChange={(e) => setEndTime(e.target.value)}
                 required
               />
             </div>
