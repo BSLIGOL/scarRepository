@@ -23,10 +23,10 @@
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
-            <TextBlock Text="대시보드" Style="{StaticResource TitleTextBlockStyle}"/>
+            <TextBlock Text="?�?�보?? Style="{StaticResource TitleTextBlockStyle}"/>
             <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="12">
-                <Button Content="로그아웃" Click="LogoutButton_Click"/>
-                <Button Content="스터디 찾기" Click="FindStudyButton_Click"/>
+                <Button Content="로그?�웃" Click="LogoutButton_Click"/>
+                <Button Content="?�터??찾기" Click="FindStudyButton_Click"/>
             </StackPanel>
         </Grid>
 
@@ -35,9 +35,9 @@
 
             <ScrollViewer Visibility="{Binding IsLoading, Converter={StaticResource BoolNegationConverter}}">
                 <StackPanel Spacing="24">
-                    <!-- 내 스터디 섹션 -->
+                    
                     <StackPanel Spacing="12">
-                        <TextBlock Text="내 스터디" Style="{StaticResource SubtitleTextBlockStyle}"/>
+                        <TextBlock Text="???�터?? Style="{StaticResource SubtitleTextBlockStyle}"/>
                         
                         <GridView ItemsSource="{Binding MyStudies}" SelectionMode="None" IsItemClickEnabled="True" ItemClick="GridView_ItemClick">
                             <GridView.ItemTemplate>
@@ -55,7 +55,7 @@
                                                 <TextBlock Text="{Binding MemberCount}" Style="{StaticResource CaptionTextBlockStyle}" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
                                                 <TextBlock Text="/" Style="{StaticResource CaptionTextBlockStyle}" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
                                                 <TextBlock Text="{Binding MaxMembers}" Style="{StaticResource CaptionTextBlockStyle}" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
-                                                <TextBlock Text="명" Style="{StaticResource CaptionTextBlockStyle}" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                                                <TextBlock Text="�? Style="{StaticResource CaptionTextBlockStyle}" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
                                             </StackPanel>
                                         </StackPanel>
                                     </Border>
@@ -63,7 +63,7 @@
                             </GridView.ItemTemplate>
                         </GridView>
                         
-                        <TextBlock Text="가입한 스터디가 없습니다." 
+                        <TextBlock Text="가?�한 ?�터?��? ?�습?�다." 
                                    Visibility="{Binding MyStudies.Count, Converter={StaticResource IntToVisibilityConverter}, ConverterParameter=Inverse}"
                                    HorizontalAlignment="Center" 
                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>

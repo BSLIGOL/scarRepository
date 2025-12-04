@@ -17,7 +17,7 @@ namespace scarDesktop.Views
 
         private void ViewModel_StudyCreated(object sender, EventArgs e)
         {
-            // 스터디 생성 성공 시 뒤로가기 (목록 페이지로 복귀)
+            
             if (Frame.CanGoBack)
             {
                 Frame.GoBack();

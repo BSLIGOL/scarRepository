@@ -18,7 +18,7 @@ namespace scarDesktop.Views
         {
             System.Console.WriteLine("[MainPage] OnNavigatedTo called");
             base.OnNavigatedTo(e);
-            // 페이지 진입 시 데이터 로드
+            
             ViewModel.LoadDataCommand.Execute(null);
         }
         private void MainPage_Loaded(object sender, RoutedEventArgs e)

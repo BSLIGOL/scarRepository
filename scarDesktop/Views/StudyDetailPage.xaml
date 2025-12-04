@@ -17,11 +17,11 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <!-- Header -->
+        
         <StackPanel Grid.Row="0" Margin="0,0,0,24">
             <StackPanel Orientation="Horizontal" Spacing="12" Margin="0,0,0,12">
-                <Button Content="목록으로" Click="BackButton_Click"/>
-                <Button Content="대시보드" Click="DashboardButton_Click"/>
+                <Button Content="목록?�로" Click="BackButton_Click"/>
+                <Button Content="?�?�보?? Click="DashboardButton_Click"/>
             </StackPanel>
             <TextBlock Text="{Binding Study.Title}" Style="{StaticResource TitleTextBlockStyle}" TextWrapping="Wrap"/>
             <TextBlock Text="{Binding Study.Content}" Style="{StaticResource BodyTextBlockStyle}" Margin="0,8,0,0" TextWrapping="Wrap"/>
@@ -29,7 +29,7 @@
 
         <ScrollViewer Grid.Row="1">
             <StackPanel Spacing="24">
-                <!-- Info Section -->
+                
                 <Grid ColumnSpacing="24" RowSpacing="12">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
@@ -43,18 +43,18 @@
                     <TextBlock Text="리더:" FontWeight="Bold" Grid.Row="0" Grid.Column="0"/>
                     <TextBlock Text="{Binding Study.CreatorNickName}" Grid.Row="0" Grid.Column="1"/>
 
-                    <TextBlock Text="인원:" FontWeight="Bold" Grid.Row="1" Grid.Column="0"/>
+                    <TextBlock Text="?�원:" FontWeight="Bold" Grid.Row="1" Grid.Column="0"/>
                     <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="1" Spacing="4">
                         <TextBlock Text="{Binding Study.CurrentMemberCount}"/>
                         <TextBlock Text="/"/>
                         <TextBlock Text="{Binding Study.MaxMember}"/>
-                        <TextBlock Text="명"/>
+                        <TextBlock Text="�?/>
                     </StackPanel>
                 </Grid>
 
-                <!-- Members Section -->
+                
                 <StackPanel>
-                    <TextBlock Text="스터디 멤버" Style="{StaticResource SubtitleTextBlockStyle}" Margin="0,0,0,8"/>
+                    <TextBlock Text="?�터??멤버" Style="{StaticResource SubtitleTextBlockStyle}" Margin="0,0,0,8"/>
                     <ItemsControl ItemsSource="{Binding Study.Members}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
@@ -74,13 +74,13 @@
                     </ItemsControl>
                 </StackPanel>
 
-                <!-- Action Buttons -->
+                
                 <StackPanel Orientation="Horizontal" Spacing="12">
-                    <Button Content="스터디 참여 신청" Command="{Binding JoinCommand}" Visibility="{Binding CanJoin, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-                    <!-- More buttons for Leave, Delete, etc. to be implemented -->
+                    <Button Content="?�터??참여 ?�청" Command="{Binding JoinCommand}" Visibility="{Binding CanJoin, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                    
                 </StackPanel>
                 
-                <!-- Loading/Error -->
+                
                 <ProgressRing IsActive="{Binding IsLoading}" HorizontalAlignment="Center"/>
                 <TextBlock Text="{Binding ErrorMessage}" Foreground="Red" HorizontalAlignment="Center"/>
 

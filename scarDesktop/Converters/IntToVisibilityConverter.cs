@@ -10,7 +10,7 @@ namespace scarDesktop.Converters
         {
             if (value is int intValue)
             {
-                // parameter가 "Inverse"면 반대로 동작
+                
                 bool isInverse = parameter?.ToString() == "Inverse";
 
                 if (isInverse)

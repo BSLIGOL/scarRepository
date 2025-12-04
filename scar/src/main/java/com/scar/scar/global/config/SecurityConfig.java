@@ -17,6 +17,10 @@ import org.springframework.security.web.SecurityFilterChain;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Arrays;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
 @EnableWebSecurity
@@ -31,8 +35,8 @@ public class SecurityConfig {
                 // 1. CSRF 보안 설정 비활성화 (REST API)
                 .csrf(AbstractHttpConfigurer::disable)
 
-                // 2. CORS 설정 (WebMvcConfig에서 설정)
-                .cors(cors -> cors.configure(http))
+                // 2. CORS 설정 (SecurityConfig에서 직접 설정)
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 // 3. HTTP 요청 권한 설정
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/studies/create").authenticated()
@@ -40,7 +44,7 @@ public class SecurityConfig {
                         .anyRequest().permitAll())
                 // 4. 로그인 설정 (JSON 방식)
                 .formLogin(form -> form
-                        .loginProcessingUrl("/login") // 로그인 URL (POST /login)
+                        .loginProcessingUrl("/login") // 로그인 URL (POST /api/login)
                         .usernameParameter("email") // 로그인 ID 파라미터 (email)
                         .passwordParameter("password") // 로그인 비밀번호 파라미터 (password)
                         .successHandler((request, response, authentication) -> {
@@ -99,5 +103,18 @@ public class SecurityConfig {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration
+                .setAllowedOrigins(Arrays.asList("http://localhost:3000", "https://d2rn263s3hknwu.cloudfront.net"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowCredentials(true);
+        configuration.setAllowedHeaders(Arrays.asList("*"));
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
 }

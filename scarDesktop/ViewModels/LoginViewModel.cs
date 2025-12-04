@@ -37,7 +37,7 @@ namespace scarDesktop.ViewModels
 
             if (string.IsNullOrWhiteSpace(Email) || string.IsNullOrWhiteSpace(Password))
             {
-                ErrorMessage = "이메일과 비밀번호를 입력해주세요.";
+                ErrorMessage = "?�메?�과 비�?번호�??�력?�주?�요.";
                 return;
             }
 
@@ -65,7 +65,7 @@ namespace scarDesktop.ViewModels
             {
                 Console.WriteLine($"[LoginViewModel] Exception during login: {ex.Message}");
                 Console.WriteLine($"[LoginViewModel] Exception stack trace: {ex.StackTrace}");
-                ErrorMessage = $"로그인 중 오류가 발생했습니다: {ex.Message}";
+                ErrorMessage = $"로그??�??�류가 발생?�습?�다: {ex.Message}";
             }
             finally
             {

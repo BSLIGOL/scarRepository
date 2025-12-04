@@ -14,20 +14,20 @@
 
     <Grid>
         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Width="300" Spacing="10">
-            <TextBlock Text="회원가입" FontSize="24" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,20"/>
+            <TextBlock Text="?�원가?? FontSize="24" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,20"/>
 
-            <TextBox Header="이메일" Text="{Binding Email, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" PlaceholderText="example@email.com"/>
-            <TextBox Header="닉네임" Text="{Binding NickName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" PlaceholderText="닉네임"/>
-            <PasswordBox Header="비밀번호" PasswordChanged="PasswordBox_PasswordChanged" PlaceholderText="••••••••"/>
-            <PasswordBox Header="비밀번호 확인" PasswordChanged="ConfirmPasswordBox_PasswordChanged" PlaceholderText="••••••••"/>
+            <TextBox Header="?�메?? Text="{Binding Email, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" PlaceholderText="example@email.com"/>
+            <TextBox Header="?�네?? Text="{Binding NickName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" PlaceholderText="?�네??/>
+            <PasswordBox Header="비�?번호" PasswordChanged="PasswordBox_PasswordChanged" PlaceholderText="?�••••••�?/>
+            <PasswordBox Header="비�?번호 ?�인" PasswordChanged="ConfirmPasswordBox_PasswordChanged" PlaceholderText="?�••••••�?/>
 
             <TextBlock Text="{Binding ErrorMessage}" Foreground="Red" TextWrapping="Wrap" />
 
-            <Button Command="{Binding SignupCommand}" Content="회원가입" HorizontalAlignment="Stretch" IsEnabled="{Binding IsLoading, Converter={StaticResource BoolNegationConverter}}"/>
+            <Button Command="{Binding SignupCommand}" Content="?�원가?? HorizontalAlignment="Stretch" IsEnabled="{Binding IsLoading, Converter={StaticResource BoolNegationConverter}}"/>
 
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,10,0,0">
-                <TextBlock Text="이미 계정이 있으신가요? " Foreground="Gray"/>
-                <HyperlinkButton Content="로그인" Click="LoginButton_Click" Padding="0"/>
+                <TextBlock Text="?��? 계정???�으?��??? " Foreground="Gray"/>
+                <HyperlinkButton Content="로그?? Click="LoginButton_Click" Padding="0"/>
             </StackPanel>
             
             <ProgressRing IsActive="{Binding IsLoading}" HorizontalAlignment="Center" />

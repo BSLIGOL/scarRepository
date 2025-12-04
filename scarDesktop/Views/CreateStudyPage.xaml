@@ -14,19 +14,19 @@
 
     <Grid Padding="24">
         <StackPanel MaxWidth="600" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="16">
-            <TextBlock Text="스터디 만들기" Style="{StaticResource TitleTextBlockStyle}" HorizontalAlignment="Center" Margin="0,0,0,16"/>
+            <TextBlock Text="?�터??만들�? Style="{StaticResource TitleTextBlockStyle}" HorizontalAlignment="Center" Margin="0,0,0,16"/>
 
-            <TextBox Header="스터디 이름" Text="{Binding Title, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" PlaceholderText="스터디 이름을 입력하세요"/>
+            <TextBox Header="?�터???�름" Text="{Binding Title, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" PlaceholderText="?�터???�름???�력?�세??/>
             
-            <TextBox Header="스터디 소개" Text="{Binding Content, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" PlaceholderText="스터디에 대한 설명을 입력하세요" Height="150" AcceptsReturn="True" TextWrapping="Wrap"/>
+            <TextBox Header="?�터???�개" Text="{Binding Content, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" PlaceholderText="?�터?�에 ?�???�명???�력?�세?? Height="150" AcceptsReturn="True" TextWrapping="Wrap"/>
             
-            <NumberBox Header="최대 인원" Value="{Binding MaxMember, Mode=TwoWay}" Minimum="2" Maximum="100" SpinButtonPlacementMode="Inline"/>
+            <NumberBox Header="최�? ?�원" Value="{Binding MaxMember, Mode=TwoWay}" Minimum="2" Maximum="100" SpinButtonPlacementMode="Inline"/>
 
             <TextBlock Text="{Binding ErrorMessage}" Foreground="Red" TextWrapping="Wrap" />
 
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="16" Margin="0,16,0,0">
                 <Button Content="취소" Click="CancelButton_Click" Width="100"/>
-                <Button Content="만들기" Command="{Binding CreateStudyCommand}" Style="{StaticResource AccentButtonStyle}" Width="100" IsEnabled="{Binding IsLoading, Converter={StaticResource BoolNegationConverter}}"/>
+                <Button Content="만들�? Command="{Binding CreateStudyCommand}" Style="{StaticResource AccentButtonStyle}" Width="100" IsEnabled="{Binding IsLoading, Converter={StaticResource BoolNegationConverter}}"/>
             </StackPanel>
 
             <ProgressRing IsActive="{Binding IsLoading}" HorizontalAlignment="Center"/>

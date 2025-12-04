@@ -1,0 +1,14 @@
+spring:
+  datasource:
+    # 테스트 시 실제 DB 접속 대신 메모리 기반 H2 DB 사용
+    url: jdbc:h2:mem:testdb;MODE=MySQL
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: create-drop # 테스트 후 DB 초기화
+    show-sql: true
+  sql:
+    init:
+      mode: never

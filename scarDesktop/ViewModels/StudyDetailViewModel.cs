@@ -10,7 +10,7 @@ namespace scarDesktop.ViewModels
     public partial class StudyDetailViewModel : ObservableObject
     {
         private readonly StudyService _studyService;
-        private readonly AuthService _authService; // For user info if needed
+        private readonly AuthService _authService; 
 
         [ObservableProperty]
         private StudyDetail _study;
@@ -50,12 +50,12 @@ namespace scarDesktop.ViewModels
                 }
                 else
                 {
-                    ErrorMessage = "스터디 정보를 불러올 수 없습니다.";
+                    ErrorMessage = "?�터???�보�?불러?????�습?�다.";
                 }
             }
             catch (Exception ex)
             {
-                ErrorMessage = $"오류 발생: {ex.Message}";
+                ErrorMessage = $"?�류 발생: {ex.Message}";
             }
             finally
             {
@@ -70,25 +70,25 @@ namespace scarDesktop.ViewModels
         {
             if (Study == null) return;
 
-            // TODO: Show dialog to get message
-            string message = "열심히 하겠습니다!"; // Default message for now
+            
+            string message = "?�심???�겠?�니??"; 
 
             try
             {
                 bool success = await _applicationService.ApplyToStudyAsync(Study.Id, message);
                 if (success)
                 {
-                    // Refresh
+                    
                     await LoadStudyDetailAsync(Study.Id);
                 }
                 else
                 {
-                    ErrorMessage = "스터디 신청에 실패했습니다.";
+                    ErrorMessage = "?�터???�청???�패?�습?�다.";
                 }
             }
             catch (Exception ex)
             {
-                ErrorMessage = $"신청 오류: {ex.Message}";
+                ErrorMessage = $"?�청 ?�류: {ex.Message}";
             }
         }
     }

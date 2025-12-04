@@ -3,9 +3,9 @@ spring:
     name: SCar
 
   datasource:
-    url: jdbc:mysql://scar-db-seoul.cx2uyo68kyx6.ap-northeast-2.rds.amazonaws.com:3306/scar?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul
-    username: admin
-    password: ${SPRING_DATASOURCE_PASSWORD}
+    url: jdbc:mysql://localhost:3306/scar?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul
+    username: root
+    password: 1234
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   sql:

@@ -28,7 +28,7 @@ namespace scarDesktop.Views
                 var selectedStudy = (Study)e.AddedItems[0];
                 Frame.Navigate(typeof(StudyDetailPage), selectedStudy.Id);
 
-                // Reset selection
+                
                 ((ListView)sender).SelectedItem = null;
             }
         }

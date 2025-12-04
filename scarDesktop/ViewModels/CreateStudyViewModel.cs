@@ -18,7 +18,7 @@ namespace scarDesktop.ViewModels
         private string content;
 
         [ObservableProperty]
-        private int maxMember = 4; // Default value
+        private int maxMember = 4; 
 
         [ObservableProperty]
         private bool isLoading;
@@ -40,13 +40,13 @@ namespace scarDesktop.ViewModels
         {
             if (string.IsNullOrWhiteSpace(Title) || string.IsNullOrWhiteSpace(Content))
             {
-                ErrorMessage = "제목과 내용을 모두 입력해주세요.";
+                ErrorMessage = "?�목�??�용??모두 ?�력?�주?�요.";
                 return;
             }
 
             if (MaxMember < 2)
             {
-                ErrorMessage = "최대 인원은 2명 이상이어야 합니다.";
+                ErrorMessage = "최�? ?�원?� 2�??�상?�어???�니??";
                 return;
             }
 
@@ -67,7 +67,7 @@ namespace scarDesktop.ViewModels
             }
             catch (Exception ex)
             {
-                ErrorMessage = $"스터디 생성 실패: {ex.Message}";
+                ErrorMessage = $"?�터???�성 ?�패: {ex.Message}";
             }
             finally
             {

@@ -42,19 +42,19 @@ namespace scarDesktop.ViewModels
 
             if (string.IsNullOrWhiteSpace(Email) || string.IsNullOrWhiteSpace(Password) || string.IsNullOrWhiteSpace(NickName))
             {
-                ErrorMessage = "모든 필드를 입력해주세요.";
+                ErrorMessage = "모든 ?�드�??�력?�주?�요.";
                 return;
             }
 
             if (Password != ConfirmPassword)
             {
-                ErrorMessage = "비밀번호가 일치하지 않습니다.";
+                ErrorMessage = "비�?번호가 ?�치?��? ?�습?�다.";
                 return;
             }
 
             if (Password.Length < 6)
             {
-                ErrorMessage = "비밀번호는 최소 6자 이상이어야 합니다.";
+                ErrorMessage = "비�?번호??최소 6???�상?�어???�니??";
                 return;
             }
 
@@ -76,7 +76,7 @@ namespace scarDesktop.ViewModels
             }
             catch (Exception ex)
             {
-                ErrorMessage = $"회원가입 중 오류가 발생했습니다: {ex.Message}";
+                ErrorMessage = $"?�원가??�??�류가 발생?�습?�다: {ex.Message}";
             }
             finally
             {

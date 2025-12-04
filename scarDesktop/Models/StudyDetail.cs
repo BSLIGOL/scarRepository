@@ -14,9 +14,9 @@ namespace scarDesktop.Models
         public bool JoinedByCurrentUser { get; set; }
         public bool AppliedByCurrentUser { get; set; }
         public bool IsLeader { get; set; }
-        // Schedules are DashboardScheduleDto in frontend, let's check if we have it or need to create it.
-        // We have DashboardSchedule in models.ts but maybe not in C# yet.
-        // Let's use a generic list for now or create ScheduleDto.
+        
+        
+        
         public List<DashboardSchedule> Schedules { get; set; }
     }
 
@@ -24,7 +24,7 @@ namespace scarDesktop.Models
     {
         public int UserId { get; set; }
         public string NickName { get; set; }
-        public string Role { get; set; } // "LEADER" or "MEMBER"
+        public string Role { get; set; } 
     }
 
     public class DashboardSchedule

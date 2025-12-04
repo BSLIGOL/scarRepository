@@ -16,7 +16,7 @@ namespace scarDesktop.Views
 
         private void ViewModel_SignupSuccess(object sender, System.EventArgs e)
         {
-            // 회원가입 성공 시 로그인 페이지로 이동
+            
             Frame.Navigate(typeof(LoginPage));
         }
 
