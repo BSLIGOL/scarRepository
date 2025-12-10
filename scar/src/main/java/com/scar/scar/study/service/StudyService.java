@@ -2,6 +2,8 @@ package com.scar.scar.study.service;
 
 import com.scar.scar.study.domain.Study;
 import com.scar.scar.study.domain.StudyMember;
+import com.scar.scar.schedule.domain.Schedule;
+import com.scar.scar.study.domain.StudyApplication;
 import com.scar.scar.user.domain.User;
 import com.scar.scar.study.domain.ApplyStatus;
 import com.scar.scar.study.domain.StudyRole;
@@ -67,7 +69,6 @@ public class StudyService {
                 boolean applied = false;
                 boolean isLeader = false;
 
-                // 탈퇴하지 않은 멤버만 필터링
                 List<StudyMember> activeMembers = study.getMembers().stream()
                                 .filter(member -> member.getLeftAt() == null)
                                 .toList();
@@ -82,13 +83,11 @@ public class StudyService {
                         applied = studyApplicationRepository.existsByUserAndStudyAndStatusIn(
                                         user, study, List.of(ApplyStatus.PENDING));
 
-                        // 리더인지 확인
                         isLeader = activeMembers.stream()
                                         .anyMatch(member -> member.getUser().getId().equals(currentUserId)
                                                         && member.getStudyRole() == StudyRole.LEADER);
                 }
 
-                // 스케줄 목록 (멤버인 경우에만 조회)
                 List<DashboardScheduleDto> schedules = List.of();
                 if (joined) {
                         schedules = scheduleRepository.findAllByStudyId(studyId).stream()
@@ -123,7 +122,6 @@ public class StudyService {
                 Study study = studyRepository.findById(studyId)
                                 .orElseThrow(() -> new IllegalArgumentException("스터디를 찾을 수 없습니다."));
 
-                // 리더인지 확인
                 boolean isLeader = studyMemberRepository.findAllByStudyId(studyId).stream()
                                 .anyMatch(member -> member.getUser().getId().equals(userId)
                                                 && member.getStudyRole() == StudyRole.LEADER
@@ -146,7 +144,6 @@ public class StudyService {
                 Study study = studyRepository.findById(studyId)
                                 .orElseThrow(() -> new IllegalArgumentException("스터디를 찾을 수 없습니다."));
 
-                // 리더인지 확인
                 boolean isLeader = studyMemberRepository.findAllByStudyId(studyId).stream()
                                 .anyMatch(member -> member.getUser().getId().equals(userId)
                                                 && member.getStudyRole() == StudyRole.LEADER
@@ -156,21 +153,16 @@ public class StudyService {
                         throw new IllegalArgumentException("스터디 리더만 삭제할 수 있습니다.");
                 }
 
-                // 연관된 데이터 삭제 (소프트 삭제)
-                // 1. 스케줄 삭제
-                List<com.scar.scar.schedule.domain.Schedule> schedules = scheduleRepository.findAllByStudyId(studyId);
+                List<Schedule> schedules = scheduleRepository.findAllByStudyId(studyId);
                 scheduleRepository.deleteAll(schedules);
 
-                // 2. 신청 내역 삭제
-                List<com.scar.scar.study.domain.StudyApplication> applications = studyApplicationRepository
+                List<StudyApplication> applications = studyApplicationRepository
                                 .findByStudy(study);
                 studyApplicationRepository.deleteAll(applications);
 
-                // 3. 멤버 삭제 (리더 포함)
                 List<StudyMember> members = studyMemberRepository.findAllByStudyId(studyId);
                 studyMemberRepository.deleteAll(members);
 
-                // 4. 스터디 삭제
                 studyRepository.delete(study);
         }
 

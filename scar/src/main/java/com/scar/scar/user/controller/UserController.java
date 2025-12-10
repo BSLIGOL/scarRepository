@@ -1,6 +1,9 @@
 package com.scar.scar.user.controller;
 
 import com.scar.scar.user.dto.UserRequestDto;
+import com.scar.scar.user.dto.UserResponseDto;
+import com.scar.scar.user.dto.UpdateProfileRequestDto;
+import com.scar.scar.user.dto.ChangePasswordRequestDto;
 import com.scar.scar.global.security.CustomUserDetails;
 import com.scar.scar.user.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -9,15 +12,18 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.Map;
-
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("")
 public class UserController {
     private final UserService userService;
 
+    /**
+     * 회원가입을 처리합니다.
+     *
+     * @param dto 회원가입 요청 정보 (이메일, 비밀번호, 닉네임)
+     * @return 성공 시 "Success" 문자열 반환
+     */
     @PostMapping("/join")
     public ResponseEntity<String> join(@RequestBody UserRequestDto dto) {
         userService.join(dto);
@@ -25,99 +31,88 @@ public class UserController {
     }
 
     /**
-     * 현재 로그인한 유저 정보를 조회합니다.
+     * 현재 로그인한 유저 정보 조회
      */
     @GetMapping("/current-user")
-    public ResponseEntity<?> getCurrentUser(@AuthenticationPrincipal CustomUserDetails currentUser) {
+    public ResponseEntity<UserResponseDto> getCurrentUser(@AuthenticationPrincipal CustomUserDetails currentUser) {
         if (currentUser == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(Map.of("error", "로그인된 사용자가 없습니다."));
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        Map<String, Object> data = new HashMap<>();
-        data.put("id", currentUser.getUser().getId());
-        data.put("email", currentUser.getUsername());
-        data.put("nickName", currentUser.getNickName());
+        UserResponseDto response = UserResponseDto.builder()
+                .id(currentUser.getUser().getId())
+                .email(currentUser.getUsername())
+                .nickName(currentUser.getNickName())
+                .build();
 
-        return ResponseEntity.ok(data);
+        return ResponseEntity.ok(response);
     }
 
     /**
-     * 프로필 정보를 수정합니다. (닉네임 변경)
+     * 프로필 정보 수정 (닉네임 변경)
      */
     @PutMapping("/users/me")
-    public ResponseEntity<?> updateProfile(
-            @RequestBody Map<String, String> request,
+    public ResponseEntity<UserResponseDto> updateProfile(
+            @RequestBody UpdateProfileRequestDto request,
             @AuthenticationPrincipal CustomUserDetails currentUser) {
         if (currentUser == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(Map.of("error", "로그인된 사용자가 없습니다."));
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        String newNickName = request.get("nickName");
+        String newNickName = request.getNickName();
+
         if (newNickName == null || newNickName.trim().isEmpty()) {
-            return ResponseEntity.badRequest()
-                    .body(Map.of("error", "닉네임은 필수 입력값입니다."));
+            return ResponseEntity.badRequest().build();
         }
 
         try {
             userService.updateProfile(currentUser.getUser().getId(), newNickName);
-            Map<String, Object> response = new HashMap<>();
-            response.put("id", currentUser.getUser().getId());
-            response.put("email", currentUser.getUsername());
-            response.put("nickName", newNickName);
+
+            UserResponseDto response = UserResponseDto.builder()
+                    .id(currentUser.getUser().getId())
+                    .email(currentUser.getUsername())
+                    .nickName(newNickName)
+                    .build();
             return ResponseEntity.ok(response);
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest()
-                    .body(Map.of("error", e.getMessage()));
+            return ResponseEntity.badRequest().build();
         }
     }
 
     /**
-     * 비밀번호를 변경합니다.
+     * 비밀번호 변경
      */
     @PutMapping("/users/password")
-    public ResponseEntity<?> changePassword(
-            @RequestBody Map<String, String> request,
+    public ResponseEntity<Void> changePassword(
+            @RequestBody ChangePasswordRequestDto request,
             @AuthenticationPrincipal CustomUserDetails currentUser) {
         if (currentUser == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(Map.of("error", "로그인된 사용자가 없습니다."));
-        }
-
-        String currentPassword = request.get("currentPassword");
-        String newPassword = request.get("newPassword");
-
-        if (currentPassword == null || newPassword == null) {
-            return ResponseEntity.badRequest()
-                    .body(Map.of("error", "현재 비밀번호와 새 비밀번호를 모두 입력해야 합니다."));
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
         try {
-            userService.changePassword(currentUser.getUser().getId(), currentPassword, newPassword);
-            return ResponseEntity.ok(Map.of("message", "비밀번호가 성공적으로 변경되었습니다."));
+            userService.changePassword(currentUser.getUser().getId(), request.getCurrentPassword(),
+                    request.getNewPassword());
+            return ResponseEntity.ok().build();
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest()
-                    .body(Map.of("error", e.getMessage()));
+            return ResponseEntity.badRequest().build();
         }
     }
 
     /**
-     * 계정을 삭제합니다.
+     * 계정 삭제
      */
     @DeleteMapping("/users/me")
-    public ResponseEntity<?> deleteAccount(@AuthenticationPrincipal CustomUserDetails currentUser) {
+    public ResponseEntity<Void> deleteAccount(@AuthenticationPrincipal CustomUserDetails currentUser) {
         if (currentUser == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(Map.of("error", "로그인된 사용자가 없습니다."));
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
         try {
             userService.deleteAccount(currentUser.getUser().getId());
-            return ResponseEntity.ok(Map.of("message", "계정이 성공적으로 삭제되었습니다."));
+            return ResponseEntity.ok().build();
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest()
-                    .body(Map.of("error", e.getMessage()));
+            return ResponseEntity.badRequest().build();
         }
     }
 }

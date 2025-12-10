@@ -24,8 +24,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const userData = await authService.getMe();
       setUser(userData);
       localStorage.setItem('user', JSON.stringify(userData));
-    } catch (error) {
-      console.error('Failed to fetch user', error);
+    } catch (error: any) {
+      // 401 means simply "Not logged in", which is fine.
+      // Also ignore our custom "CloudFront Error Page Interception" error
+      const isCloudFrontError = error.message && error.message.includes('CloudFront Error Page Interception');
+
+      if ((error.response && error.response.status === 401) || isCloudFrontError) {
+        // just stay as guest (silent)
+      } else {
+        console.error('Failed to fetch user', error);
+      }
       setUser(null);
       localStorage.removeItem('user');
     } finally {

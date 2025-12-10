@@ -12,3 +12,8 @@ spring:
   sql:
     init:
       mode: never
+
+jwt:
+  secret: ${JWT_SECRET_TEST}
+  token-validity-in-seconds: 3600
+  cookie-secure: false

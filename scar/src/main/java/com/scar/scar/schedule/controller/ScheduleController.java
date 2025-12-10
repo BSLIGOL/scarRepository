@@ -19,7 +19,7 @@ import java.util.List;
 public class ScheduleController {
     private final ScheduleService scheduleService;
 
-    /** 일정 상세 정보를 조회합니다. */
+    /** 일정 상세 정보 */
     @GetMapping("/{scheduleId}")
     public ResponseEntity<ScheduleDetailDto> getScheduleDetail(
             @PathVariable Long scheduleId,
@@ -29,7 +29,7 @@ public class ScheduleController {
         return ResponseEntity.ok(scheduleDetailDto);
     }
 
-    /** 일정을 생성합니다. */
+    /** 일정 생성 */
     @PostMapping("/new")
     public ResponseEntity<String> newSchedule(
             @RequestBody ScheduleRequestDto schedule,
@@ -38,7 +38,7 @@ public class ScheduleController {
         return ResponseEntity.ok("Success");
     }
 
-    /** 다가오는 일정을 조회합니다. (7일 이내) */
+    /** 다가오는 일정 조회 (7일 이내) */
     @GetMapping("/upcoming")
     public ResponseEntity<List<DashboardScheduleDto>> getUpcomingSchedules(
             @AuthenticationPrincipal CustomUserDetails currentUser) {
@@ -49,7 +49,7 @@ public class ScheduleController {
         return ResponseEntity.ok(schedules);
     }
 
-    /** 오늘의 일정을 조회합니다. */
+    /** 오늘의 일정 조회 */
     @GetMapping("/today")
     public ResponseEntity<List<DashboardScheduleDto>> getTodaySchedules(
             @AuthenticationPrincipal CustomUserDetails currentUser) {
@@ -60,7 +60,7 @@ public class ScheduleController {
         return ResponseEntity.ok(schedules);
     }
 
-    /** 월별 일정을 조회합니다. (year, month가 null이면 전체 일정 조회) */
+    /** 월별 일정 조회 (year, month가 null이면 전체 일정 조회) */
     @GetMapping("/my")
     public ResponseEntity<List<DashboardScheduleDto>> getMySchedules(
             @AuthenticationPrincipal CustomUserDetails currentUser,
@@ -75,7 +75,7 @@ public class ScheduleController {
     }
 
     /**
-     * 일정을 수정합니다. (스터디 리더만 가능)
+     * 일정 수정 (스터디 리더만 가능)
      */
     @PutMapping("/{id}")
     public ResponseEntity<?> updateSchedule(
@@ -95,7 +95,7 @@ public class ScheduleController {
     }
 
     /**
-     * 일정을 삭제합니다. (스터디 리더만 가능)
+     * 일정 삭제 (스터디 리더만 가능)
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteSchedule(

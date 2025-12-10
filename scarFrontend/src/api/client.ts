@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const apiClient = axios.create({
-    baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api', // Spring Boot default port
+    baseURL: '/api', // Use proxy
     headers: {
         'Content-Type': 'application/json',
     },
@@ -10,12 +10,18 @@ const apiClient = axios.create({
 
 // Response interceptor for error handling
 apiClient.interceptors.response.use(
-    (response) => response,
+    (response) => {
+        // [Critical Fix] CloudFront Custom Error Page Interception Prevention
+        // If API returns HTML (e.g. index.html due to 403/404 interception), treat it as error.
+        if (typeof response.data === 'string' && response.data.trim().startsWith('<!DOCTYPE')) {
+            return Promise.reject(new Error('API returned HTML instead of JSON (CloudFront Error Page Interception)'));
+        }
+        return response;
+    },
     (error) => {
         if (error.response && error.response.status === 401) {
-            // Handle unauthorized access (e.g., redirect to login)
-            console.error('Unauthorized access - redirecting to login');
-            // window.location.href = '/login'; // Uncomment if you want auto-redirect
+            // Unauthorized (access denied or not logged in)
+            // It's handled by the caller or global router guards
         }
         return Promise.reject(error);
     }

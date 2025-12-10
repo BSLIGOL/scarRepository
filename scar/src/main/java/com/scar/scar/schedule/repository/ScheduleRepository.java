@@ -13,7 +13,6 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
     List<Schedule> findByStudyIdInAndStartTimeBetweenOrderByStartTimeAsc(
             List<Long> studyIds, LocalDateTime start, LocalDateTime end);
 
-    // 전체 일정 조회 (시간순 정렬)
     List<Schedule> findByStudyIdInOrderByStartTimeAsc(List<Long> studyIds);
 
     List<Schedule> findAllByCreatedBy(User user);

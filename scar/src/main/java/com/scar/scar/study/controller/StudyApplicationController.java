@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 public class StudyApplicationController {
     private final StudyApplicationService studyApplicationService;
 
-    /** 스터디 신청 목록을 조회합니다. (스터디 리더만 가능, only PENDING) */
+    /** 스터디 신청 목록 조회 (스터디 리더만 가능, only PENDING) */
     @GetMapping("/{id}")
     public ResponseEntity<List<StudyApplicationResponseDto>> getStudyApplications(
             @PathVariable Long id,

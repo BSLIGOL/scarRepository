@@ -15,7 +15,6 @@ public class CustomUserDetails implements UserDetails {
         this.user = user;
     }
 
-    // 닉네임 반환
     public String getNickName() {
         return user.getNickName();
     }
@@ -32,7 +31,7 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public String getUsername() {
-        return user.getEmail(); // 계정의 고유한 값을 리턴합니다 (여기서는 이메일)
+        return user.getEmail();
     }
 
     @Override

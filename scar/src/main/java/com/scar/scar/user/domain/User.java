@@ -37,14 +37,14 @@ public class User extends BaseEntity {
     private GlobalRole globalRole;
 
     /**
-     * 닉네임을 변경합니다.
+     * 닉네임 변경
      */
     public void updateNickName(String newNickName) {
         this.nickName = newNickName;
     }
 
     /**
-     * 비밀번호를 변경합니다.
+     * 비밀번호 변경
      */
     public void updatePassword(String newPassword) {
         this.password = newPassword;

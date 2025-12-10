@@ -13,7 +13,6 @@ public class StudyApplicationResponseDto {
     private String nickName; // 신청자 닉네임 (신청 당시)
     private String message; // 신청 메시지
     private ApplyStatus status;// 신청 상태 (PENDING, APPROVED 등)
-    // Entity -> DTO 변환 메서드 (필요한 정보만 선택)
 
     public static StudyApplicationResponseDto from(StudyApplication app) {
         return StudyApplicationResponseDto.builder()

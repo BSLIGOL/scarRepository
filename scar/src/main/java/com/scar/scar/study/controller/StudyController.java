@@ -4,7 +4,7 @@ import com.scar.scar.study.domain.StudyMember;
 import com.scar.scar.user.domain.User;
 import com.scar.scar.study.domain.StudyRole;
 import com.scar.scar.study.dto.DashboardStudyDto;
-import com.scar.scar.schedule.dto.ScheduleDto;
+
 import com.scar.scar.study.dto.StudyDetailDto;
 import com.scar.scar.study.dto.StudyRequestDto;
 import com.scar.scar.study.dto.StudyResponseDto;
@@ -29,12 +29,18 @@ public class StudyController {
     private final StudyMemberService studyMemberService;
     private final ScheduleService scheduleService;
 
+    /**
+     * 전체 스터디 목록 조회
+     */
     @GetMapping("")
     public ResponseEntity<List<StudyResponseDto>> listStudies() {
         List<StudyResponseDto> studies = studyService.getAllStudies();
         return ResponseEntity.ok(studies);
     }
 
+    /**
+     * 스터디 생성
+     */
     @PostMapping("/create")
     public ResponseEntity<String> createStudy(
             @RequestBody StudyRequestDto dto,
@@ -46,7 +52,9 @@ public class StudyController {
         return ResponseEntity.ok("Success");
     }
 
-    /** 스터디 상세 정보를 조회합니다. */
+    /**
+     * 스터디 상세 정보 조회
+     */
     @GetMapping("/{id}")
     public ResponseEntity<StudyDetailDto> viewStudy(
             @PathVariable Long id,
@@ -56,7 +64,9 @@ public class StudyController {
         return ResponseEntity.ok(study);
     }
 
-    /** 내가 가입한 스터디 목록을 조회합니다. */
+    /**
+     * 내가 가입한 스터디 목록 조회
+     */
     @GetMapping("/my")
     public ResponseEntity<List<DashboardStudyDto>> getMyStudies(
             @AuthenticationPrincipal CustomUserDetails currentUser) {
@@ -68,7 +78,7 @@ public class StudyController {
     }
 
     /**
-     * 스터디 정보를 수정합니다. (스터디 리더만 가능)
+     * 스터디 정보 수정 (스터디 리더만 가능)
      */
     @PutMapping("/{id}")
     public ResponseEntity<?> updateStudy(
@@ -88,7 +98,7 @@ public class StudyController {
     }
 
     /**
-     * 스터디를 삭제합니다. (스터디 리더만 가능)
+     * 스터디 삭제 (스터디 리더만 가능)
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteStudy(
@@ -107,7 +117,7 @@ public class StudyController {
     }
 
     /**
-     * 스터디 리더 권한을 위임합니다. (스터디 리더만 가능)
+     * 스터디 리더 권한 위임 (스터디 리더만 가능)
      */
     @PostMapping("/{id}/delegate")
     public ResponseEntity<?> delegateLeader(

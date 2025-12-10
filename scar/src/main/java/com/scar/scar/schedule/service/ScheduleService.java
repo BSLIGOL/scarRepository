@@ -32,7 +32,7 @@ public class ScheduleService {
         private final ScheduleAttendanceRepository scheduleAttendanceRepository;
         private final StudyMemberRepository studyMemberRepository;
 
-        /** 특정 스터디의 전체 일정을 조회합니다. */
+        /** 특정 스터디 전체 일정 조회 */
         @Transactional(readOnly = true)
         public List<ScheduleDto> getSchedules(Long studyId) {
 
@@ -41,7 +41,7 @@ public class ScheduleService {
                                 .toList();
         }
 
-        /** 일정 상세 정보를 조회합니다. */
+        /** 일정 상세 정보 조회 */
         @Transactional(readOnly = true)
         public ScheduleDetailDto getScheduleDetail(Long scheduleId, Long currentUserId) {
 
@@ -80,7 +80,7 @@ public class ScheduleService {
                 return ScheduleDetailDto.of(schedule, members, isLeader);
         }
 
-        /** 일정을 생성합니다. */
+        /** 일정 생성 */
         @Transactional
         public void createSchedule(ScheduleRequestDto dto, User creator) {
 
@@ -102,7 +102,7 @@ public class ScheduleService {
 
         }
 
-        /** 다가오는 일정을 조회합니다. (7일 이내) */
+        /** 다가오는 일정 조회 (7일 이내) */
         @Transactional(readOnly = true)
         public List<DashboardScheduleDto> getUpcomingSchedules(Long userId) {
                 LocalDateTime now = LocalDateTime.now();
@@ -125,7 +125,7 @@ public class ScheduleService {
                                 .toList();
         }
 
-        /** 오늘의 일정을 조회합니다. */
+        /** 오늘의 일정 조회 */
         @Transactional(readOnly = true)
         public List<DashboardScheduleDto> getTodaySchedules(Long userId) {
                 LocalDate today = LocalDate.now();
@@ -150,11 +150,10 @@ public class ScheduleService {
         }
 
         /**
-         * 월별 일정을 조회합니다. (year, month가 null이면 전체 일정 조회)
+         * 월별 일정 조회 (year, month가 null이면 전체 일정 조회)
          */
         @Transactional(readOnly = true)
         public List<DashboardScheduleDto> getMySchedules(Long userId, Integer year, Integer month) {
-                // 1. 내가 가입한 스터디 ID 목록 조회
                 List<StudyMember> myStudies = studyMemberRepository.findAllByUserId(userId);
                 List<Long> studyIds = myStudies.stream()
                                 .map(member -> member.getStudy().getId())
@@ -175,18 +174,16 @@ public class ScheduleService {
                                         .findByStudyIdInAndStartTimeBetweenOrderByStartTimeAsc(studyIds, startOfMonth,
                                                         endOfMonth);
                 } else {
-                        // 전체 일정 조회 (시간순 정렬)
                         schedules = scheduleRepository.findByStudyIdInOrderByStartTimeAsc(studyIds);
                 }
 
-                // 3. DTO로 변환하여 반환
                 return schedules.stream()
                                 .map(DashboardScheduleDto::from)
                                 .toList();
         }
 
         /**
-         * 일정을 수정합니다. (스터디 리더만 가능)
+         * 일정 수정 (스터디 리더만 가능)
          */
         @Transactional
         public void updateSchedule(Long scheduleId, ScheduleRequestDto dto, Long userId) {
@@ -197,7 +194,7 @@ public class ScheduleService {
                 // 스터디 리더인지 확인
                 boolean isLeader = studyMemberRepository.findAllByStudyId(schedule.getStudy().getId()).stream()
                                 .anyMatch(member -> member.getUser().getId().equals(userId)
-                                                && member.getStudyRole() == com.scar.scar.study.domain.StudyRole.LEADER
+                                                && member.getStudyRole() == StudyRole.LEADER
                                                 && member.getLeftAt() == null);
 
                 if (!isLeader) {
@@ -212,7 +209,7 @@ public class ScheduleService {
         }
 
         /**
-         * 일정을 삭제합니다. (스터디 리더만 가능)
+         * 일정 삭제 (스터디 리더만 가능)
          */
         @Transactional
         public void deleteSchedule(Long scheduleId, Long userId) {
@@ -220,7 +217,6 @@ public class ScheduleService {
                                 .orElseThrow(() -> new IllegalArgumentException(
                                                 "해당 일정을 찾을 수 없습니다."));
 
-                // 스터디 리더인지 확인
                 boolean isLeader = studyMemberRepository.findAllByStudyId(schedule.getStudy().getId()).stream()
                                 .anyMatch(member -> member.getUser().getId().equals(userId)
                                                 && member.getStudyRole() == com.scar.scar.study.domain.StudyRole.LEADER
@@ -231,7 +227,6 @@ public class ScheduleService {
                                         "스터디 리더만 일정을 삭제할 수 있습니다.");
                 }
 
-                // 일정 삭제
                 scheduleRepository.delete(schedule);
         }
 }

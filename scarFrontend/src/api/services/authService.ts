@@ -7,22 +7,20 @@ export const authService = {
         return response.data;
     },
 
-    // Login is typically handled by Spring Security form login or a specific endpoint
-    // If you make a custom JSON login endpoint:
+    // Login using JWT (HttpOnly Cookie)
     login: async (data: Pick<UserRequest, 'email' | 'password'>) => {
-        const response = await apiClient.post('/login', data, {
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-        });
+        const response = await apiClient.post('/auth/login', data);
         return response.data;
     },
 
     getMe: async () => {
-        const response = await apiClient.get<User>('/current-user');
+        // Cache busting to prevent stale user data
+        const response = await apiClient.get<User>(`/current-user?t=${new Date().getTime()}`);
         return response.data;
     },
 
     logout: async () => {
-        const response = await apiClient.post('/logout');
+        const response = await apiClient.post('/auth/logout');
         return response.data;
     },
 

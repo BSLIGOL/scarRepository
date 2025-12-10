@@ -44,9 +44,6 @@ public class Study extends BaseEntity {
     @Builder.Default
     private List<StudyMember> members = new ArrayList<>();
 
-    /**
-     * 스터디 정보를 수정합니다.
-     */
     public void updateInfo(String title, String content, int maxMember) {
         this.title = title;
         this.content = content;

@@ -12,8 +12,12 @@ import type { DashboardStudy, DashboardSchedule } from '../types/models';
 import { format } from 'date-fns';
 
 export default function MainPage() {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, loading: authLoading } = useAuth();
   const [date, setDate] = useState<Date | undefined>(new Date());
+
+  // 인증 상태 확인 중이면 로딩 화면 표시 (컴포넌트 깜빡임 방지) - Hook 규칙 준수를 위해 위치 이동
+  // if (authLoading) ... 
+
   const [currentMonth, setCurrentMonth] = useState<Date>(new Date());
 
   // 상태 관리
@@ -26,6 +30,7 @@ export default function MainPage() {
 
   // 데이터 로딩
   useEffect(() => {
+    console.log("MainPage Loaded - Version: SecureFix-v1"); // 버전 확인용 로그
     if (isAuthenticated) {
       loadDashboardData();
     }
@@ -72,7 +77,10 @@ export default function MainPage() {
   // 달력에 표시할 일정 날짜들 (중복 제거)
   const scheduledDates = useMemo(() => {
     const dates = new Set<string>();
-    monthSchedules.forEach(schedule => {
+    // monthSchedules가 배열이 아닐 경우(에러 등)를 대비해 안전하게 처리
+    const schedules = Array.isArray(monthSchedules) ? monthSchedules : [];
+
+    schedules.forEach(schedule => {
       if (schedule.date) {
         dates.add(schedule.date);
       }
@@ -84,10 +92,17 @@ export default function MainPage() {
   const selectedDateSchedules = useMemo(() => {
     if (!date) return [];
     const dateStr = format(date, 'yyyy-MM-dd');
-    return monthSchedules.filter(
+    const schedules = Array.isArray(monthSchedules) ? monthSchedules : [];
+
+    return schedules.filter(
       schedule => schedule.date === dateStr
     );
   }, [date, monthSchedules]);
+
+  // Hook 규칙 준수: 모든 Hook 선언 후에 조건부 렌더링이 와야 함
+  if (authLoading) {
+    return <div className="flex justify-center items-center min-h-[600px] text-muted-foreground">로딩 중...</div>;
+  }
 
   if (!isAuthenticated) {
     return (

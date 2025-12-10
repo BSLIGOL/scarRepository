@@ -1,102 +1,46 @@
 package com.scar.scar.global.config;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.scar.scar.global.security.CustomUserDetails;
-import com.scar.scar.user.service.CustomUserDetailService;
-import jakarta.servlet.http.HttpServletResponse;
+import com.scar.scar.global.security.jwt.JwtAuthenticationFilter;
+import com.scar.scar.global.security.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.MediaType;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Arrays;
-import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.http.HttpMethod;
 
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final CustomUserDetailService userDetailService;
+    private final CorsConfigurationSource corsConfigurationSource;
+    private final JwtTokenProvider jwtTokenProvider;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                // 1. CSRF 보안 설정 비활성화 (REST API)
                 .csrf(AbstractHttpConfigurer::disable)
-
-                // 2. CORS 설정 (SecurityConfig에서 직접 설정)
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                // 3. HTTP 요청 권한 설정
+                .cors(cors -> cors.configurationSource(corsConfigurationSource))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/studies/create").authenticated()
-                        .requestMatchers("/applications/*/apply").authenticated()
-                        .anyRequest().permitAll())
-                // 4. 로그인 설정 (JSON 방식)
-                .formLogin(form -> form
-                        .loginProcessingUrl("/login") // 로그인 URL (POST /api/login)
-                        .usernameParameter("email") // 로그인 ID 파라미터 (email)
-                        .passwordParameter("password") // 로그인 비밀번호 파라미터 (password)
-                        .successHandler((request, response, authentication) -> {
-                            // 로그인 성공 시 JSON 응답 반환
-                            response.setStatus(HttpServletResponse.SC_OK);
-                            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-                            response.setCharacterEncoding("UTF-8");
-                            CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-
-                            Map<String, Object> data = new HashMap<>();
-                            data.put("id", userDetails.getUser().getId());
-                            data.put("email", userDetails.getUsername());
-                            data.put("nickName", userDetails.getNickName());
-
-                            new ObjectMapper().writeValue(response.getWriter(), data);
-                        })
-                        .failureHandler((request, response, exception) -> {
-                            // 로그인 실패 시 JSON 응답 반환
-                            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-                            response.setCharacterEncoding("UTF-8");
-
-                            Map<String, String> data = new HashMap<>();
-                            data.put("error", "로그인 실패: " + exception.getMessage());
-
-                            new ObjectMapper().writeValue(response.getWriter(), data);
-                        })
-                        .permitAll())
-                // 5. 로그아웃 설정
-                .logout(logout -> logout
-                        .logoutUrl("/logout")
-                        .logoutSuccessHandler((request, response, authentication) -> {
-                            response.setStatus(HttpServletResponse.SC_OK);
-                        })
-                        .invalidateHttpSession(true)
-                        .deleteCookies("JSESSIONID"))
-                // 6. 세션 관리 설정
+                        .requestMatchers("/auth/login", "/auth/logout", "/join", "/users/join").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/studies", "/studies/{id}")
+                        .permitAll()
+                        .anyRequest().authenticated())
                 .sessionManagement(session -> session
-                        // 세션 고정 공격 보호 (로그인 시 세션 ID 변경)
-                        .sessionFixation().changeSessionId()
-                        // 동시 세션 제어
-                        .maximumSessions(1) // 최대 허용 세션 수 1개
-                        .maxSessionsPreventsLogin(false) // 동시 로그인 차단 여부 (false: 기존 세션 만료)
-                        .expiredSessionStrategy(event -> {
-                            var response = event.getResponse();
-                            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-                            response.setCharacterEncoding("UTF-8");
-                            Map<String, String> data = new HashMap<>();
-                            data.put("error", "세션이 만료되었습니다. 다시 로그인해주세요.");
-                            new ObjectMapper().writeValue(response.getWriter(), data);
-                        }));
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .formLogin(AbstractHttpConfigurer::disable)
+                .httpBasic(AbstractHttpConfigurer::disable)
+                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider),
+                        UsernamePasswordAuthenticationFilter.class);
+
         return http.build();
     }
 
@@ -105,16 +49,4 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration
-                .setAllowedOrigins(Arrays.asList("http://localhost:3000", "https://d2rn263s3hknwu.cloudfront.net"));
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        configuration.setAllowCredentials(true);
-        configuration.setAllowedHeaders(Arrays.asList("*"));
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-        return source;
-    }
 }

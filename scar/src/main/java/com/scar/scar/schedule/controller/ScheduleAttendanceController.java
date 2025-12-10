@@ -17,6 +17,6 @@ public class ScheduleAttendanceController {
             @RequestParam Long userId,
             @RequestParam AttendanceStatus status) {
         scheduleAttendanceService.attendSchedule(scheduleId, userId, status);
-        return ResponseEntity.ok("Success"); // JSON 응답 반환
+        return ResponseEntity.ok("Success");
     }
 }

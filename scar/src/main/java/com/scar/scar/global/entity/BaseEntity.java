@@ -1,25 +1,25 @@
-package com.scar.scar.global.entity;
+    package com.scar.scar.global.entity;
 
-import jakarta.persistence.EntityListeners;
-import jakarta.persistence.MappedSuperclass;
-import lombok.Getter;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+    import jakarta.persistence.EntityListeners;
+    import jakarta.persistence.MappedSuperclass;
+    import lombok.Getter;
+    import org.springframework.data.annotation.CreatedDate;
+    import org.springframework.data.annotation.LastModifiedDate;
+    import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.time.LocalDateTime;
+    import java.time.LocalDateTime;
 
-@MappedSuperclass
-@Getter
-@EntityListeners(AuditingEntityListener.class)
-public abstract class BaseEntity {
+    @MappedSuperclass
+    @Getter
+    @EntityListeners(AuditingEntityListener.class)
+    public abstract class BaseEntity {
 
-    @CreatedDate
-    private LocalDateTime createdAt;
+        @CreatedDate
+        private LocalDateTime createdAt;
 
-    @LastModifiedDate
-    private LocalDateTime updatedAt;
+        @LastModifiedDate
+        private LocalDateTime updatedAt;
 
-    private LocalDateTime deletedAt;
-}
+        private LocalDateTime deletedAt;
+    }
 

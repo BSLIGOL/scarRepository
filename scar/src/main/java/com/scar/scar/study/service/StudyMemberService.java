@@ -43,7 +43,7 @@ public class StudyMemberService {
                 return studyMemberRepository.findByStudy(study);
         }
 
-        /** 스터디 회원 정보를 조회합니다. */
+        /** 스터디 멤버 정보 조회 */
         public StudyMember getStudyMember(Long studyId, Long userId) {
                 Study study = studyRepository.findById(studyId)
                                 .orElseThrow(() -> new IllegalArgumentException("해당 스터디를 찾을 수 없습니다."));
