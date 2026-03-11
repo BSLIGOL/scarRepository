@@ -18,16 +18,17 @@ public interface StudyRepository extends JpaRepository<Study, Long> {
 
         @Query("SELECT new com.scar.scar.study.dto.StudyResponseDto(" +
                         "s.id, s.title, s.content, s.maxMember, " +
-                        "s.creator.nickName, COUNT(sm.id)) " +
+                        "COUNT(sm.id), " +
+                        "MAX(CASE WHEN leader.studyRole = 'LEADER' THEN u.nickName ELSE NULL END)) " +
                         "FROM Study s " +
-                        "LEFT JOIN s.creator " +
                         "LEFT JOIN StudyMember sm ON sm.study.id = s.id " +
-                        "GROUP BY s.id, s.title, s.content, s.maxMember, s.creator.nickName")
+                        "LEFT JOIN StudyMember leader ON leader.study.id = s.id AND leader.studyRole = 'LEADER' " +
+                        "LEFT JOIN User u ON u.id = leader.user.id " +
+                        "GROUP BY s.id, s.title, s.content, s.maxMember")
         List<StudyResponseDto> findAllStudiesWithMemberCount();
 
         @Query("SELECT s FROM Study s " +
-                        "JOIN FETCH s.creator " +
                         "LEFT JOIN FETCH s.members m " +
                         "WHERE s.id = :id")
-        Optional<Study> findByIdWithCreatorAndMembers(@Param("id") Long id);
+        Optional<Study> findByIdWithMembers(@Param("id") Long id);
 }

@@ -63,7 +63,7 @@ export default function StudyListPage() {
                   <div className="flex items-center gap-2 text-sm">
                     <UserCircle className="size-4 text-muted-foreground" />
                     <span className="text-muted-foreground">리더:</span>
-                    <span>{study.creatorNickName}</span>
+                    <span>{study.leaderNickname}</span>
                   </div>
                   <div className="flex items-center gap-2 text-sm">
                     <Users className="size-4 text-muted-foreground" />

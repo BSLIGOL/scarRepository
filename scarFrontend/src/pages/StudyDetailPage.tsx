@@ -260,7 +260,7 @@ export default function StudyDetailPage() {
             <div className="flex items-center gap-2">
               <UserCircle className="size-5 text-muted-foreground" />
               <span className="text-muted-foreground">리더:</span>
-              <span>{study.creatorNickName}</span>
+              <span>{study.leaderNickname}</span>
             </div>
             <div className="flex items-center gap-2">
               <Users className="size-5 text-muted-foreground" />

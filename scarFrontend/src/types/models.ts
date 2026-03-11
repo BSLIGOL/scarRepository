@@ -65,7 +65,7 @@ export interface StudyDetail {
     title: string;
     content: string;
     maxMember: number;
-    creatorNickName: string;
+    leaderNickname: string;
     currentMemberCount: number;
     members: StudyMember[];
     joinedByCurrentUser: boolean;
@@ -79,7 +79,7 @@ export interface Study {
     title: string;
     content: string;
     maxMember: number;
-    creatorNickName: string;
+    leaderNickname: string;
     currentMemberCount: number;
 }
 

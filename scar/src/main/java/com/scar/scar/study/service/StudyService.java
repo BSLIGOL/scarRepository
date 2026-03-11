@@ -50,9 +50,10 @@ public class StudyService {
                                 .build();
 
                 studyMemberRepository.save(leaderMember);
+                studyMemberRepository.save(leaderMember);
                 long memberCount = studyMemberRepository.countByStudy(savedStudy);
 
-                return StudyResponseDto.of(savedStudy, memberCount);
+                return StudyResponseDto.of(savedStudy, memberCount, creator.getNickName());
         }
 
         @Transactional(readOnly = true)
@@ -62,7 +63,7 @@ public class StudyService {
 
         @Transactional(readOnly = true)
         public StudyDetailDto getStudyDetail(Long studyId, Long currentUserId) {
-                Study study = studyRepository.findByIdWithCreatorAndMembers(studyId)
+                Study study = studyRepository.findByIdWithMembers(studyId)
                                 .orElseThrow(() -> new RuntimeException("스터디를 찾을 수 없습니다."));
 
                 boolean joined = false;
@@ -95,9 +96,15 @@ public class StudyService {
                                         .collect(Collectors.toList());
                 }
 
+                String leaderNickname = activeMembers.stream()
+                                .filter(member -> member.getStudyRole() == StudyRole.LEADER)
+                                .map(member -> member.getUser().getNickName())
+                                .findFirst()
+                                .orElse("Unknown");
+
                 return StudyDetailDto.of(study, activeMembers.size(),
                                 activeMembers.stream().map(StudyMemberDto::from).toList(),
-                                joined, applied, isLeader, schedules);
+                                joined, applied, isLeader, schedules, leaderNickname);
         }
 
         @Transactional(readOnly = true)
@@ -197,7 +204,8 @@ public class StudyService {
                 newLeader.setStudyRole(StudyRole.LEADER);
 
                 // 스터디 생성자 정보 업데이트 (선택 사항이지만 일관성을 위해 권장)
-                study.setCreator(newLeader.getUser());
+                // 스터디 생성자 정보 업데이트 (선택 사항이지만 일관성을 위해 권장)
+                // study.setCreator(newLeader.getUser()); // Creator 불변 정책으로 인한 주석 처리
 
                 studyMemberRepository.save(currentLeader);
                 studyMemberRepository.save(newLeader);
